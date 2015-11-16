@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{{extend 'layout.html'}}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+
+
+<body>
+    <h4>Post listing for:</h4>
+    <h1>{{=my_board.name}}</h1>
+    <!--<h1>=my_board[0].name</h1>-->
+</body>
+
+{{if auth.user_id is None:}}
+    <div class="not_signed_in">
+        {{=A('Sign Up', _class='btn btn-primary', _href=URL('default', 'user', args=['register']))}}
+        {{=A('Sign In', _class='btn btn-info', _href=URL('default', 'user', args=['login']))}}
+{{else:}}
+    <div>{{=A('Add post', _class='btn btn-success',
+        _href=URL('default', 'new_post', args=[request.args(0)], user_signature=True))}}
+{{pass}}
+    {{=A('Board Listing', _class='btn link', _href=URL('default', 'index'))}}</div>
+
+<hr>
+
+<div id="posts">
+    {{for p in post_list:}}
+        <div class="entry">
+            <!--<span class="boardtitle">{{=p.name}}</span>-->
+            {{if auth.user_id == p.user_id:}}
+                <div class="icons">
+                    {{=A(icon_edit, _href=URL('default', 'edit_post', args=[p.id], user_signature=True))}}
+                    {{=A(icon_del, _href=URL('default', 'delete_post', args=[p.id], user_signature=True))}}
+                </div>
+            {{pass}}
+            <p class="title">{{=p.name}}</p>
+            <hr>
+            <p class="desc">{{=p.description}}</p>
+            <hr>
+            <p class="created_on">Posted on {{=p.post_created_on}}</p>
+        </div>
+    {{pass}}
+</div>
+
+</html>

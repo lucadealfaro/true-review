@@ -1,0 +1,52 @@
+.colorful {
+  color: $clrHilight;
+}
+
+p {
+    white-space: pre-line;
+}
+
+.entryform {
+  position: absolute;
+  left: 100px;
+  top: 150px;
+}
+
+div.entry {
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 10px;
+  @include background-image(linear-gradient(lighten($clrListBg, 40%), $clrListBg));
+  margin: 10px;
+  @include border-radius(5px);
+  border: 1px solid $clrTxt;
+  @include box-shadow(rgba(#000,0.7) 0 4px 10px 2px);
+  display: inline-block;
+
+  p {
+    text-align: center;
+  }
+  .title{
+    font-size: 1.5em;
+    color: $clrMain;
+  }
+  .post_num {
+    font-size: 3em;
+  }
+  p.created_on{
+    font-size: 1em;
+    color: $clrCreated;
+  }
+}
+
+.back{
+  text-align: end;
+}
+
+h1.create{
+  text-align: center;
+}
+
+div.icons {
+  text-align: right;
+}

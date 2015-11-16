@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{{extend 'layout.html'}}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body class="body_class">
+    <h1>True Review</h1>
+</body>
+
+{{if auth.user_id is None:}}
+    <div class="not_signed_in">
+        {{=A('Sign Up', _class='btn btn-primary', _href=URL('default', 'user', args=['register']))}}
+        {{=A('Sign In', _class='btn btn-info', _href=URL('default', 'user', args=['login']))}}
+        <p></p>
+    </div>
+{{else:}}
+<!--
+    <div>{{=A('Add board', _class='btn btn-success', _href=URL('default', 'new_board'))}}</div>
+-->
+{{pass}}
+
+<hr>
+
+<h2>Categories</h2>
+
+
+
+
+
