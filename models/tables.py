@@ -17,27 +17,92 @@
 
 from datetime import datetime
 
-Auth(db)
-## after auth = Auth(db)
-auth.settings.extra_fields['auth_user']= [
-  Field('address'),
-  Field('city'),
-  Field('zip'),
-  Field('phone')]
-## before auth.define_tables(username=True)
-auth.define_tables(username=True)
+textdb = DAL('google:datastore+ndb')
 
 db.define_table('tr_user',
                 Field('user_id', db.auth_user),
                 Field('name'),
                 Field('joined', 'datetime'),
-                Field('bio', 'text'),
+                #Field('bio', 'text'),
                 Field('email'),
-                Field('user_active', 'boolean'),
-                Field('on_top_page', 'boolean')
+                Field('topic', 'reference topics')
+                #Field('user_active', 'boolean'),
+                #Field('on_top_page', 'boolean')
                 )
 db.tr_user.joined.default = datetime.utcnow()
 db.tr_user.joined.readable = db.tr_user.joined.writable = False
+
+db.define_table('topics',
+                Field('name'),
+                Field('subtopic')
+                )
+
+db.define_table('papers',
+                Field('title'),
+                Field('author'),
+                Field('topic', 'reference topic'),
+                Field('abstract', 'text'),
+                Field('summary', 'text')
+                )
+
+db.define_table('reviews',
+                Field('date', 'datetime', default=datetime.utcnow()),
+                Field('reviewer', 'reference tr_user'),
+                Field('grade', 'int'),
+                Field('review_content', 'text')
+                )
+
+
+textdb.define_table('long_text',
+                Field('abstract', 'text'),
+                Field('summary', 'text'),
+                Field('review', 'text')
+                )
+
+db.papers.abstract.represent = lambda v, r: textdb.long_text(v).abstract
+db.papers.summary.represent = lambda v, r: textdb.long_text(v).summary
+db.papers.review.represent = lambda v, r: textdb.long_text(v).review
+
+def edit():
+    r = db.mytable(request.args(0))
+    old_text_id = int(r.mytext) if r is not None else None
+    form = SQLFORM(record=r)
+    #if form.process(onvalidation=my_validator(old_text_id)).accepted:
+        #redirect(wherever)
+    return dict(form=form)
+
+db.define_table('mytable',
+    Field('mytext', 'text'),
+)
+
+textdb.define_table('texttable',
+    Field('textval', 'text')
+)
+
+
+db.mytable.mytext.represent = lambda v, r: textdb.texttable(v).textval
+
+
+def my_validator(old_text_id):
+    def validate(form):
+        if old_text_id is None:
+            # We need to insert.
+            i = textdb.texttable.insert(textval = form.vars.mytext)
+            form.vars.mytext = str(i)
+        else:
+            # We need to replace.
+            textdb(textdb.texttable.id == int(old_text_id)).update(textval = form.vars.mytext)
+            form.vars.mytext = str(old_text_id)
+        return form
+
+
+def edit():
+    r = db.mytable(request.args(0))
+    old_text_id = int(r.mytext) if r is not None else None
+    form = SQLFORM(record=r)
+    #if form.process(onvalidation=my_validator(old_text_id)).accepted:
+        #redirect(wherever)
+    return dict(form=form)
 
 
 
