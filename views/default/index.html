@@ -25,6 +25,21 @@
 
 <h2>Categories</h2>
 
+<div id="boards">
+    {{for t in topic_list:}}
+    <div class="entry">
+        <!--<span class="boardtitle">{{=t.name}}</span>-->
+        <p class="title">{{=A(t.name, _href=URL('default', 'paper_list'))}}</p>
+        <p class="subtopic">{{=A(t.subtopic)}}</p>
+    </div>
+    {{pass}}
+</div>
+
+<div>{{=A('New Topic', _href=URL('default', 'new_topics'))}}</div>
+
+<div>{{=A('Review paper', _href=URL('default', 'review_paper'))}}</div>
+
+<div>{{=A('Profile', _class='btn btn-info')}}</div>
 
 
 

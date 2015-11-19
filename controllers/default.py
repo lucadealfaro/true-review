@@ -31,7 +31,8 @@ def index():
     #return dict(board_list=board_list, recent_posts=recent_posts)
 
     tr_users = db().select(db.tr_user.ALL)
-    return dict(tr_users=tr_users)
+    topic_list = db().select(db.topics.ALL)
+    return dict(tr_users=tr_users, topic_list=topic_list)
 
 
 
@@ -52,6 +53,9 @@ def user():
     to decorate functions that need access control
     """
     return dict(form=auth())
+
+def review_paper():
+    return dict()
 
 
 @cache.action()
@@ -76,11 +80,21 @@ def reset():
   db(db.posts.id > 0).delete()
   db(db.boards.id > 0).delete()
 
-@auth.requires_login()
-def new_board():
-    form = SQLFORM(db.boards)
+def paper_list():
+    return dict()
+
+def new_paper():
+    form = SQLFORM(db.papers)
     if form.process(). accepted:
-        session.flash = T("Added board")
+        session.flash = T("Added topic")
+        redirect(URL('default', 'index'))
+    return dict(form=form)
+
+#@auth.requires_login()
+def new_topics():
+    form = SQLFORM(db.topics)
+    if form.process(). accepted:
+        session.flash = T("Added topic")
         redirect(URL('default', 'index'))
     return dict(form=form)
 
