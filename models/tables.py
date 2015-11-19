@@ -17,7 +17,12 @@
 
 from datetime import datetime
 
-textdb = DAL('google:datastore+ndb')
+textdb = DAL('sqlite://storage.db')
+
+db.define_table('topics',
+                Field('name'),
+                Field('subtopic')
+                )
 
 db.define_table('tr_user',
                 Field('user_id', db.auth_user),
@@ -32,23 +37,20 @@ db.define_table('tr_user',
 db.tr_user.joined.default = datetime.utcnow()
 db.tr_user.joined.readable = db.tr_user.joined.writable = False
 
-db.define_table('topics',
-                Field('name'),
-                Field('subtopic')
-                )
+
 
 db.define_table('papers',
                 Field('title'),
                 Field('author'),
-                Field('topic', 'reference topic'),
+                Field('topic', 'reference topics'),
                 Field('abstract', 'text'),
                 Field('summary', 'text')
                 )
 
 db.define_table('reviews',
-                Field('date', 'datetime', default=datetime.utcnow()),
+                Field('creation_date', 'datetime', default=datetime.utcnow()),
                 Field('reviewer', 'reference tr_user'),
-                Field('grade', 'int'),
+                Field('grade', 'integer'),
                 Field('review_content', 'text')
                 )
 
@@ -61,7 +63,7 @@ textdb.define_table('long_text',
 
 db.papers.abstract.represent = lambda v, r: textdb.long_text(v).abstract
 db.papers.summary.represent = lambda v, r: textdb.long_text(v).summary
-db.papers.review.represent = lambda v, r: textdb.long_text(v).review
+db.reviews.review_content.represent = lambda v, r: textdb.long_text(v).review_content
 
 def edit():
     r = db.mytable(request.args(0))

@@ -65,3 +65,58 @@ CREATE TABLE tr_user(
     on_top_page CHAR(1)
 );
 success!
+timestamp: 2015-11-19T13:35:04.068006
+CREATE TABLE topics(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    subtopic CHAR(512)
+);
+success!
+timestamp: 2015-11-19T13:35:04.188994
+ALTER TABLE tr_user ADD topic INTEGER REFERENCES topics (id) ON DELETE CASCADE  ;
+success!
+timestamp: 2015-11-19T13:35:04.300572
+CREATE TABLE papers(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title CHAR(512),
+    author CHAR(512),
+    topic INTEGER REFERENCES topics (id) ON DELETE CASCADE  ,
+    abstract TEXT,
+    summary TEXT
+);
+success!
+success!
+success!
+timestamp: 2015-11-19T13:38:47.142167
+CREATE TABLE reviews(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    creation_date TIMESTAMP,
+    reviewer INTEGER REFERENCES tr_user (id) ON DELETE CASCADE  ,
+    grade INTEGER,
+    review_content TEXT
+);
+success!
+timestamp: 2015-11-19T13:38:47.278589
+CREATE TABLE long_text(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    abstract TEXT,
+    summary TEXT,
+    review TEXT
+);
+success!
+success!
+success!
+success!
+timestamp: 2015-11-19T13:39:49.505964
+CREATE TABLE mytable(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    mytext TEXT
+);
+success!
+timestamp: 2015-11-19T13:39:49.669239
+CREATE TABLE texttable(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    textval TEXT
+);
+success!
+success!
