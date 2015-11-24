@@ -24,6 +24,8 @@ db.define_table('topics',
                 Field('subtopic')
                 )
 
+# Is this a user, or a user for a single topic?  Seems more like a user, but then we need 
+# a many to many relation to topics that includes also the reputation of the user for that topic.
 db.define_table('tr_user',
                 Field('user_id', db.auth_user),
                 Field('name'),
@@ -41,21 +43,26 @@ db.tr_user.joined.readable = db.tr_user.joined.writable = False
 
 db.define_table('papers',
                 Field('title'),
-                Field('author'),
+                Field('author'), # Ok. Later perhaps we can link papers to authors who are also reviewers.
                 Field('topic', 'reference topics'),
                 Field('abstract', 'text'),
-                Field('summary', 'text')
+                Field('summary', 'text'),
+                # We cache some quantities.
+                Field('avg_quality', 'float'),
+                Field('num_reviews', 'integer'),
                 )
 
 db.define_table('reviews',
                 Field('creation_date', 'datetime', default=datetime.utcnow()),
                 Field('reviewer', 'reference tr_user'),
-                Field('grade', 'integer'),
-                Field('review_content', 'text')
+                Field('grade', 'float'),
+                Field('review_content', 'text'),
+                Field('paper', 'reference papers'),
                 )
 
 
 textdb.define_table('long_text',
+                # Luca says: just have one field called "textcontent" or something like that.
                 Field('abstract', 'text'),
                 Field('summary', 'text'),
                 Field('review', 'text')
@@ -65,6 +72,7 @@ db.papers.abstract.represent = lambda v, r: textdb.long_text(v).abstract
 db.papers.summary.represent = lambda v, r: textdb.long_text(v).summary
 db.reviews.review_content.represent = lambda v, r: textdb.long_text(v).review_content
 
+# This should go in a controller. 
 def edit():
     r = db.mytable(request.args(0))
     old_text_id = int(r.mytext) if r is not None else None
@@ -80,7 +88,6 @@ db.define_table('mytable',
 textdb.define_table('texttable',
     Field('textval', 'text')
 )
-
 
 db.mytable.mytext.represent = lambda v, r: textdb.texttable(v).textval
 
@@ -106,6 +113,7 @@ def edit():
         #redirect(wherever)
     return dict(form=form)
 
+################### end comment out
 
 
 #db.messages.board.readable = db.messages.board.writable = False
