@@ -92,7 +92,7 @@ def paper_list():
         if p.topic == my_topic.id:
             post_list.append(p)
     print post_list.__len__()
-    return dict(paper_list=list)
+    return dict(paper_list=post_list)
 
 def new_paper():
     form = SQLFORM(db.papers)
