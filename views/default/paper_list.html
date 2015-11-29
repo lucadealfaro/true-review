@@ -7,7 +7,13 @@
 </head>
 <body>
 
-<div>{{=A('Create New Paper', _href=URL('default', 'new_paper'))}}</div>
+<div>{{=A('Create New Paper', _href=URL('default', 'new_paper', args=[request.args(0)]))}}</div>
+
+{{for p in paper_list:}}
+    <div class="entry">
+        <span class="boardtitle">{{=p.title}}</span>
+    </div>
+{{pass}}
 
 </body>
 </html>

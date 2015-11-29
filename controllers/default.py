@@ -81,7 +81,18 @@ def reset():
   db(db.boards.id > 0).delete()
 
 def paper_list():
-    return dict()
+    my_topic = db.topics(request.args(0))
+    if my_topic is None:
+        session.flash = T("No such board")
+        redirect(URL('default', 'index'))
+    list = db().select(db.papers.ALL, orderby=~db.papers.submission_time)
+    post_list = []
+    for p in list:
+        #if p.board == my_board[0].id:
+        if p.topic == my_topic.id:
+            post_list.append(p)
+    print post_list.__len__()
+    return dict(paper_list=list)
 
 def new_paper():
     form = SQLFORM(db.papers)

@@ -1,4 +1,4 @@
-timestamp: 2015-11-15T17:31:23.999044
+timestamp: 2015-11-28T16:49:26.685036
 CREATE TABLE auth_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(128),
@@ -10,21 +10,21 @@ CREATE TABLE auth_user(
     registration_id CHAR(512)
 );
 success!
-timestamp: 2015-11-15T17:31:24.148148
+timestamp: 2015-11-28T16:49:26.803109
 CREATE TABLE auth_group(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2015-11-15T17:31:24.272102
+timestamp: 2015-11-28T16:49:26.905039
 CREATE TABLE auth_membership(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-15T17:31:24.386615
+timestamp: 2015-11-28T16:49:27.029370
 CREATE TABLE auth_permission(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  ,
@@ -33,7 +33,7 @@ CREATE TABLE auth_permission(
     record_id INTEGER
 );
 success!
-timestamp: 2015-11-15T17:31:24.510640
+timestamp: 2015-11-28T16:49:27.153479
 CREATE TABLE auth_event(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time_stamp TIMESTAMP,
@@ -43,7 +43,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2015-11-15T17:31:24.656824
+timestamp: 2015-11-28T16:49:27.277603
 CREATE TABLE auth_cas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
@@ -53,123 +53,43 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2015-11-15T17:31:24.859517
-CREATE TABLE tr_user(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
-    name CHAR(512),
-    joined TIMESTAMP,
-    bio TEXT,
-    email CHAR(512),
-    user_active CHAR(1),
-    on_top_page CHAR(1)
-);
-success!
-timestamp: 2015-11-19T13:35:04.068006
+timestamp: 2015-11-28T16:49:27.405078
 CREATE TABLE topics(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name CHAR(512),
     subtopic CHAR(512)
 );
 success!
-timestamp: 2015-11-19T13:35:04.188994
-ALTER TABLE tr_user ADD topic INTEGER REFERENCES topics (id) ON DELETE CASCADE  ;
+timestamp: 2015-11-28T16:49:27.503961
+CREATE TABLE tr_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    name CHAR(512),
+    joined TIMESTAMP,
+    email CHAR(512),
+    topic INTEGER REFERENCES topics (id) ON DELETE CASCADE  
+);
 success!
-timestamp: 2015-11-19T13:35:04.300572
+timestamp: 2015-11-28T16:50:09.350762
 CREATE TABLE papers(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title CHAR(512),
     author CHAR(512),
     topic INTEGER REFERENCES topics (id) ON DELETE CASCADE  ,
+    submission_time TIMESTAMP,
     abstract TEXT,
-    summary TEXT
+    summary TEXT,
+    avg_quality DOUBLE,
+    num_reviews INTEGER
 );
 success!
-success!
-success!
-timestamp: 2015-11-19T13:38:47.142167
+timestamp: 2015-11-28T16:50:40.132007
 CREATE TABLE reviews(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     creation_date TIMESTAMP,
     reviewer INTEGER REFERENCES tr_user (id) ON DELETE CASCADE  ,
-    grade INTEGER,
-    review_content TEXT
+    grade DOUBLE,
+    review_content TEXT,
+    paper INTEGER REFERENCES papers (id) ON DELETE CASCADE  
 );
-success!
-timestamp: 2015-11-19T13:38:47.278589
-CREATE TABLE long_text(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    abstract TEXT,
-    summary TEXT,
-    review TEXT
-);
-success!
-success!
-success!
-success!
-timestamp: 2015-11-19T13:39:49.505964
-CREATE TABLE mytable(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    mytext TEXT
-);
-success!
-timestamp: 2015-11-19T13:39:49.669239
-CREATE TABLE texttable(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    textval TEXT
-);
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
 success!
