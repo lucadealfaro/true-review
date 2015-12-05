@@ -1,13 +1,6 @@
-<!DOCTYPE html>
 {{extend 'layout.html'}}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body class="body_class">
-    <h1>True Review</h1>
-</body>
+
+<!-- HEADER -->
 
 {{if auth.user_id is None:}}
     <div class="not_signed_in">
@@ -20,27 +13,25 @@
     <div>{{=A('Add board', _class='btn btn-success', _href=URL('default', 'new_board'))}}</div>
 -->
 {{pass}}
-
-<hr>
-
-<h2>Categories</h2>
-
-<div id="boards">
-    {{for t in topic_list:}}
-    <div class="entry">
-        <!--<span class="boardtitle">{{=t.name}}</span>-->
-        <p class="title">{{=A(t.name, _href=URL('default', 'paper_list', args=[t.id]))}}</p>
-        <p class="subtopic">{{=A(t.subtopic)}}</p>
-    </div>
-    {{pass}}
+<div class="class-header">
+    <h1> True Review</h1>
 </div>
+
 
 <div>{{=A('New Topic', _href=URL('default', 'new_topics'))}}</div>
 
 <div>{{=A('Review paper', _href=URL('default', 'review_paper'))}}</div>
 
-<div>{{=A('Profile', _class='btn btn-info')}}</div>
 
-
-
+<div class="class-board-wrapper">
+    {{for t in topic_list:}}
+        <div class="create-post-a">
+            <a href="{{=URL('default', 'paper_list', args=[t.id])}}">
+                <div class="create-post-a">
+                    <span>{{=t.name}}</span>
+                </div>
+            </a>
+         </div>
+    {{pass}}
+</div>
 

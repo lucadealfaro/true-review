@@ -1,71 +1,293 @@
-/* line 1, ../sass/_main.scss */
+/*
+
 .colorful {
-  color: #bb8833;
+  color: $clrHilight;
 }
 
-/* line 5, ../sass/_main.scss */
 p {
-  white-space: pre-line;
+    white-space: pre-line;
 }
 
-/* line 9, ../sass/_main.scss */
 .entryform {
   position: absolute;
   left: 100px;
   top: 150px;
 }
 
-/* line 15, ../sass/_main.scss */
 div.entry {
   padding-left: 5px;
   padding-right: 5px;
   padding-top: 10px;
-  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2NjY2NjYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
-  background-size: 100%;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #cccccc));
-  background-image: -moz-linear-gradient(#ffffff, #cccccc);
-  background-image: -webkit-linear-gradient(#ffffff, #cccccc);
-  background-image: linear-gradient(#ffffff, #cccccc);
+  @include background-image(linear-gradient(lighten($clrListBg, 40%), $clrListBg));
   margin: 10px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  border: 1px solid #777;
-  -moz-box-shadow: rgba(0, 0, 0, 0.7) 0 4px 10px 2px;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.7) 0 4px 10px 2px;
-  box-shadow: rgba(0, 0, 0, 0.7) 0 4px 10px 2px;
+  @include border-radius(5px);
+  border: 1px solid $clrTxt;
+  @include box-shadow(rgba(#000,0.7) 0 4px 10px 2px);
   display: inline-block;
-}
-/* line 26, ../sass/_main.scss */
-div.entry p {
-  text-align: center;
-}
-/* line 29, ../sass/_main.scss */
-div.entry .title {
-  font-size: 1.5em;
-  color: #f1g23a;
-}
-/* line 33, ../sass/_main.scss */
-div.entry .post_num {
-  font-size: 3em;
-}
-/* line 36, ../sass/_main.scss */
-div.entry p.created_on {
-  font-size: 1em;
-  color: #777675;
+
+  p {
+    text-align: center;
+  }
+  .title{
+    font-size: 1.5em;
+    color: $clrMain;
+  }
+  .post_num {
+    font-size: 3em;
+  }
+  p.created_on{
+    font-size: 1em;
+    color: $clrCreated;
+  }
 }
 
-/* line 42, ../sass/_main.scss */
-.back {
+.back{
   text-align: end;
 }
 
-/* line 46, ../sass/_main.scss */
-h1.create {
+h1.create{
   text-align: center;
 }
 
-/* line 50, ../sass/_main.scss */
 div.icons {
+  text-align: right;
+}
+*/
+/* line 1, ../sass/_main.scss */
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+/* line 58, ../sass/_main.scss */
+.colorful {
+  color: #bb8833;
+}
+
+/* line 63, ../sass/_main.scss */
+* {
+  padding: 0px;
+  margin: 0px;
+  font-family: "Open Sans", sans-serif;
+}
+
+/* line 68, ../sass/_main.scss */
+h1 {
+  color: #3F51B5;
+  font-size: 48px;
+  text-align: center;
+}
+
+/* login and sign up container */
+/* line 74, ../sass/_main.scss */
+.class-container {
+  background-color: #f6f6f6;
+  padding-left: 32px;
+  padding-bottom: 32px;
+  padding-right: 32px;
+  border-radius: 8px;
+  border-bottom: 6px solid #bbb;
+  padding-top: 32px;
+}
+
+/* main page (index) */
+/* line 85, ../sass/_main.scss */
+.class-header {
+  min-width: 200px;
+  max-width: 800px;
+  height: auto;
+  display: block;
+  overflow: auto;
+  text-align: center;
+  padding: 16px;
+  margin: 0 auto;
+}
+
+/* line 96, ../sass/_main.scss */
+.class-header h1 {
+  color: #3F51B5;
+  margin: 0 auto;
+}
+
+/* line 101, ../sass/_main.scss */
+.class-header .class-buttons-container {
+  height: auto;
+  display: block;
+  overflow: auto;
+  margin: 0 auto;
+  text-align: center;
+  margin-top: 16px;
+}
+
+/**************************************************   BOARD    ***************************************************/
+/*****************************************************************************************************************/
+/* line 113, ../sass/_main.scss */
+.board-container {
+  max-width: 600px;
+  min-width: 200px;
+  height: auto;
+  overflow: auto;
+  display: block;
+  margin: 40px auto;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+}
+
+/* line 126, ../sass/_main.scss */
+.board-header {
+  min-height: 40px;
+  height: auto;
+  display: block;
+  overflow: auto;
+  font-size: 24px;
+  background-color: #3F51B5;
+  color: #fff;
+  padding: 16px 16px 16px 16px;
+}
+
+/* line 136, ../sass/_main.scss */
+.board-header a {
+  text-decoration: none;
+  color: #fff;
+}
+
+/* line 140, ../sass/_main.scss */
+.board-number {
+  float: right;
+}
+
+/**************************************************   BUTTONS    *************************************************/
+/*****************************************************************************************************************/
+/* line 145, ../sass/_main.scss */
+.create-post-a a {
+  min-width: 200px;
+  max-width: 800px;
+  padding: 16px;
+  display: block;
+  margin: 16px auto;
+  text-align: center;
+  text-decoration: none;
+  font-size: 20px;
+  color: #ffffff;
+  line-height: 36px;
+  border-radius: 3px;
+  background-color: #82afff;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+}
+
+/* line 165, ../sass/_main.scss */
+.create-post-a a:hover {
+  -moz-box-shadow: 0 0 15px 1px #aaa;
+  -webkit-box-shadow: 0 0 15px 1px #aaa;
+  box-shadow: 0 0 15px 1px #aaa;
+}
+
+/* line 170, ../sass/_main.scss */
+.create-post-a a:hover, .create-post-a a:focus, .create-post-a a:active {
+  box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.3);
+  -webkit-transform: scale(1.05);
+  transform: scale(1.05);
+}
+
+/****************************************************   POST    **************************************************/
+/*****************************************************************************************************************/
+/* line 178, ../sass/_main.scss */
+.post-container {
+  max-width: 800px;
+  min-width: 200px;
+  height: auto;
+  overflow: auto;
+  display: block;
+  margin: 40px auto;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+}
+
+/* line 191, ../sass/_main.scss */
+.post-header {
+  min-height: 40px;
+  height: auto;
+  display: block;
+  overflow: auto;
+  font-size: 24px;
+  background-color: #3F51B5;
+  color: #fff;
+  padding: 16px 16px 16px 16px;
+}
+
+/* line 203, ../sass/_main.scss */
+.post-edit {
+  width: 100%;
+  height: 38px;
+  margin-top: -18px;
+}
+
+/* line 208, ../sass/_main.scss */
+.post-edit-a {
+  width: 36px;
+  height: 34px;
+  display: block;
+  float: right;
+  margin-right: 16px;
+  border-radius: 18px;
+  text-align: center;
+  font-size: 20px;
+  color: #ffffff;
+  line-height: 36px;
+  background-color: #FF4081;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: #C2185B;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+}
+
+/* line 228, ../sass/_main.scss */
+.post-edit-a:hover, .create-post-a a:hover {
+  color: #fff;
+  -moz-box-shadow: 0 0 15px 1px #aaa;
+  -webkit-box-shadow: 0 0 15px 1px #aaa;
+  box-shadow: 0 0 15px 1px #aaa;
+}
+
+/* line 235, ../sass/_main.scss */
+.post-edit-a:hover, .post-edit-a:focus, .post-edit-a:active {
+  box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.3);
+  -webkit-transform: scale(1.2);
+  transform: scale(1.2);
+}
+
+/* line 241, ../sass/_main.scss */
+.post-name {
+  margin-left: 16px;
+  margin-right: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* line 248, ../sass/_main.scss */
+.post-number {
+  margin-left: 16px;
+  margin-right: 16px;
+  font-size: 14px;
+  font-weight: lighter;
+  color: #757575;
+}
+
+/* line 256, ../sass/_main.scss */
+.post-description {
+  margin: 16px;
+}
+
+/* line 260, ../sass/_main.scss */
+.post-date {
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 16px;
+  color: #757575;
+  font-size: 14px;
   text-align: right;
 }
