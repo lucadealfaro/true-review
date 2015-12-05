@@ -60,10 +60,12 @@ db.define_table('topic_paper_affiliation',
 db.define_table('tr_review',
                 Field('review_content', 'text'),
                 Field('score', 'float'),
-                Field('date', 'datetime'),
+                Field('review_time', 'datetime'),
                 Field('score_before', 'float'),
                 Field('paper', 'reference tr_paper'),
-                Field('paper content', 'reference tr_paper_content'))
+                Field('paper content', 'reference tr_paper_content')
+                )
+db.tr_review.review_time.default = datetime.utcnow()
 
 
 #many to many between reviewer(s) and reviews
@@ -86,6 +88,7 @@ db.define_table('tr_paper',
                 Field('avg_quality', 'float'),
                 Field('num_reviews', 'integer'),
                 )
+db.papers.submission_time.default = datetime.utcnow()
 
 
 db.define_table('tr_paper_content',
@@ -96,7 +99,6 @@ db.define_table('tr_paper_content',
 )
 
 
-db.papers.submission_time.default = datetime.utcnow()
 db.papers.topic.default = request.args(0)
 db.papers.topic.writable = False
 db.papers.submission_time.writable = False
