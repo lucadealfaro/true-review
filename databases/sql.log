@@ -93,3 +93,10 @@ CREATE TABLE reviews(
     paper INTEGER REFERENCES papers (id) ON DELETE CASCADE  
 );
 success!
+timestamp: 2015-12-04T19:12:46.799000
+CREATE TABLE tr_reviewer(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reputation DOUBLE,
+    num_reviewed INTEGER
+);
+success!

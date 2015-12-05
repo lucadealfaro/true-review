@@ -17,12 +17,7 @@
 
 from datetime import datetime
 
-db.define_table('topics',
-                Field('name'),
-                Field('subtopic')
-                )
-
-# Is this a user, or a user for a single topic?  Seems more like a user, but then we need 
+# Is this a user, or a user for a single topic?  Seems more like a user, but then we need
 # a many to many relation to topics that includes also the reputation of the user for that topic.
 db.define_table('tr_user',
                 Field('user_id', db.auth_user),
@@ -30,19 +25,60 @@ db.define_table('tr_user',
                 Field('joined', 'datetime'),
                 #Field('bio', 'text'),
                 Field('email'),
-                Field('topic', 'reference topics')
+               # Field('topic', 'reference topics')
                 #Field('user_active', 'boolean'),
                 #Field('on_top_page', 'boolean')
                 )
 db.tr_user.joined.default = datetime.utcnow()
 db.tr_user.joined.readable = db.tr_user.joined.writable = False
 
+db.define_table('tr_reviewer',
+                Field('reputation', 'float'),
+                Field('num_reviewed', 'integer'),
+                Field('topic' 'reference topics'),
+)
+
+#many to many relationship between users and reviewers
+db.define_table('user_reviewer_affiliation',
+                Field('user', 'reference tr_user'),
+                Field('reviewer', 'reference tr_reviewer'),
+)
+
+
+db.define_table('topics',
+                Field('name'),
+                #Field('subtopic')
+                )
+
+
+#many to many relationship between topics and papers
+db.define_table('topic_paper_affiliation',
+                Field('topic', 'reference topics'),
+                Field('paper' 'reference tr_paper'),
+                )
+
+db.define_table('tr_review',
+                Field('review_content', 'text'),
+                Field('score', 'float'),
+                Field('date', 'datetime'),
+                Field('score_before', 'float'),
+                Field('paper', 'reference tr_paper'),
+                Field('paper content', 'reference tr_paper_content'))
+
+
+#many to many between reviewer(s) and reviews
+db.define_table('reviewer_review_affiliation',
+                Field('reviewer', 'reference tr_reviewer'),
+                Field('review', 'reference tr_review'),
+                )
+
 
 #
-db.define_table('papers',
+db.define_table('tr_paper',
                 Field('title'),
                 Field('author'), # Ok. Later perhaps we can link papers to authors who are also reviewers.
-                Field('topic', 'reference topics'),
+                #Field('topic', 'reference topics'),
+
                 Field('submission_time', 'datetime'),
                 Field('abstract', 'text'),
                 Field('summary', 'text'),
@@ -51,18 +87,22 @@ db.define_table('papers',
                 Field('num_reviews', 'integer'),
                 )
 
+
+db.define_table('tr_paper_content',
+                Field('content', 'text'),
+                Field('version', 'integer'),
+                Field('paper_title', 'reference tr_paper'),
+              #  Field('date', 'text'),
+)
+
+
 db.papers.submission_time.default = datetime.utcnow()
 db.papers.topic.default = request.args(0)
 db.papers.topic.writable = False
 db.papers.submission_time.writable = False
 
-db.define_table('reviews',
-                Field('creation_date', 'datetime', default=datetime.utcnow()),
-                Field('reviewer', 'reference tr_user'),
-                Field('grade', 'float'),
-                Field('review_content', 'text'),
-                Field('paper', 'reference papers'),
-                )
+
+
 
 #db.messages.board.readable = db.messages.board.writable = False
 
