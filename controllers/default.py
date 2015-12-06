@@ -34,7 +34,9 @@ def index():
     topic_list = db().select(db.topics.ALL)
     return dict(tr_users=tr_users, topic_list=topic_list)
 
-
+@auth.requires_login()
+def profile():
+    return dict()
 
 def user():
     """
@@ -58,7 +60,6 @@ def review_paper():
     form = SQLFORM(db.tr_review)
     form.vars.paper = request.args(0)
     if form.process().accepted:
-        #if db(db.topic_paper_affiliation.paper)
         session.flash = T("Added review")
         redirect(URL('default', 'index'))
     return dict(form=form)
@@ -100,7 +101,6 @@ def paper_list():
         if p.topic == my_topic.id:
             post_list.append(p)
     '''
-    print post_list.__len__()
     return dict(paper_list=list)
 
 def view_paper():
@@ -109,13 +109,17 @@ def view_paper():
         session.flash = T("No such paper")
         redirect(URL('default', 'index'))
     review_list = db(db.tr_review.paper == request.args(1)).select()
-    print review_list
     return dict(my_paper=my_paper, reviews=review_list)
 
 def new_paper():
     form = SQLFORM(db.tr_paper)
+    papers = db().select(db.tr_paper.ALL)
     if form.process(). accepted:
-        #if db(db.topic_paper_affiliation.paper)
+        '''
+        if db((db.topic_paper_affiliation.topic==request.args(0)) &
+                (db.topic_paper_affiliation.paper==len(papers))) == 0:
+            print 'this is a new paper and it does not have an entry in the intermediate table'
+        '''
         session.flash = T("Added paper")
         redirect(URL('default', 'index'))
     return dict(form=form)

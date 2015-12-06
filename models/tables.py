@@ -53,13 +53,13 @@ db.define_table('tr_paper',
                 Field('title'),
                 Field('author'), # Ok. Later perhaps we can link papers to authors who are also reviewers.
                 #Field('topic', 'reference topics'),
-
                 Field('submission_time', 'datetime'),
                 Field('abstract', 'text'),
                 Field('summary', 'text'),
                 # We cache some quantities.
                 Field('avg_quality', 'float'),
                 Field('num_reviews', 'integer'),
+                Field('paper_id')
                 )
 db.tr_paper.submission_time.default = datetime.utcnow()
 db.tr_paper.submission_time.writable = False

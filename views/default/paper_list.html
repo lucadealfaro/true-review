@@ -7,6 +7,10 @@
 </head>
 <body>
 
+<div>{{=A(icon_home + 'Home Page', _href=URL('default', 'index'))}}</div>
+
+<hr>
+
 <div>{{=A('Create New Paper', _href=URL('default', 'new_paper', args=[request.args(0)]))}}</div>
 
 <br>

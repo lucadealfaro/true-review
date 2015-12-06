@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+        {{extend 'layout.html'}}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<div>{{=A(icon_home + 'Home Page', _href=URL('default', 'index'))}}</div>
+
+
+<div>{{=auth.user.first_name}}</div>
+<div>{{=auth.user.last_name}}</div>
+<div>{{=auth.user.email}}</div>
+
+</body>
+</html>
