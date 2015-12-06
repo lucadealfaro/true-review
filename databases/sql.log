@@ -1,4 +1,4 @@
-timestamp: 2015-11-28T16:49:26.685036
+timestamp: 2015-12-05T15:27:26.198335
 CREATE TABLE auth_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(128),
@@ -10,21 +10,21 @@ CREATE TABLE auth_user(
     registration_id CHAR(512)
 );
 success!
-timestamp: 2015-11-28T16:49:26.803109
+timestamp: 2015-12-05T15:27:26.317416
 CREATE TABLE auth_group(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2015-11-28T16:49:26.905039
+timestamp: 2015-12-05T15:27:26.441431
 CREATE TABLE auth_membership(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-28T16:49:27.029370
+timestamp: 2015-12-05T15:27:26.565455
 CREATE TABLE auth_permission(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  ,
@@ -33,7 +33,7 @@ CREATE TABLE auth_permission(
     record_id INTEGER
 );
 success!
-timestamp: 2015-11-28T16:49:27.153479
+timestamp: 2015-12-05T15:27:26.678276
 CREATE TABLE auth_event(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time_stamp TIMESTAMP,
@@ -43,7 +43,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2015-11-28T16:49:27.277603
+timestamp: 2015-12-05T15:27:26.779915
 CREATE TABLE auth_cas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
@@ -53,29 +53,41 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2015-11-28T16:49:27.405078
-CREATE TABLE topics(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name CHAR(512),
-    subtopic CHAR(512)
-);
-success!
-timestamp: 2015-11-28T16:49:27.503961
+timestamp: 2015-12-05T15:27:26.906469
 CREATE TABLE tr_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     name CHAR(512),
     joined TIMESTAMP,
-    email CHAR(512),
+    email CHAR(512)
+);
+success!
+timestamp: 2015-12-05T15:31:48.429846
+CREATE TABLE topics(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512)
+);
+success!
+timestamp: 2015-12-05T15:31:48.524912
+CREATE TABLE tr_reviewer(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reputation DOUBLE,
+    num_reviewed INTEGER,
     topic INTEGER REFERENCES topics (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-28T16:50:09.350762
-CREATE TABLE papers(
+timestamp: 2015-12-05T15:33:32.146436
+CREATE TABLE user_reviewer_affiliation(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    review_user INTEGER REFERENCES tr_user (id) ON DELETE CASCADE  ,
+    reviewer INTEGER REFERENCES tr_reviewer (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-12-05T15:34:46.763101
+CREATE TABLE tr_paper(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title CHAR(512),
     author CHAR(512),
-    topic INTEGER REFERENCES topics (id) ON DELETE CASCADE  ,
     submission_time TIMESTAMP,
     abstract TEXT,
     summary TEXT,
@@ -83,23 +95,36 @@ CREATE TABLE papers(
     num_reviews INTEGER
 );
 success!
-timestamp: 2015-11-28T16:50:40.132007
-CREATE TABLE reviews(
+timestamp: 2015-12-05T15:36:35.899392
+CREATE TABLE tr_paper_content(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    creation_date TIMESTAMP,
-    reviewer INTEGER REFERENCES tr_user (id) ON DELETE CASCADE  ,
-    grade DOUBLE,
+    paper_content TEXT,
+    paper_version INTEGER,
+    paper_title INTEGER REFERENCES tr_paper (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-12-05T15:36:36.017523
+CREATE TABLE tr_review(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     review_content TEXT,
-    paper INTEGER REFERENCES papers (id) ON DELETE CASCADE  
+    score DOUBLE,
+    review_time TIMESTAMP,
+    score_before DOUBLE,
+    paper INTEGER REFERENCES tr_paper (id) ON DELETE CASCADE  ,
+    paper_content INTEGER REFERENCES tr_paper_content (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-12-04T19:12:46.799000
-CREATE TABLE tr_reviewer(
+timestamp: 2015-12-05T15:36:36.142576
+CREATE TABLE reviewer_review_affiliation(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    reputation DOUBLE,
-    num_reviewed INTEGER
+    reviewer INTEGER REFERENCES tr_reviewer (id) ON DELETE CASCADE  ,
+    review INTEGER REFERENCES tr_review (id) ON DELETE CASCADE  
 );
 success!
-success!
-success!
+timestamp: 2015-12-05T15:38:00.633356
+CREATE TABLE topic_paper_affiliation(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    topic INTEGER REFERENCES topics (id) ON DELETE CASCADE  ,
+    paper INTEGER REFERENCES tr_paper (id) ON DELETE CASCADE  
+);
 success!

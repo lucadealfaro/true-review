@@ -85,19 +85,22 @@ def paper_list():
     if my_topic is None:
         session.flash = T("No such board")
         redirect(URL('default', 'index'))
-    list = db().select(db.papers.ALL, orderby=~db.papers.submission_time)
+    list = db().select(db.tr_paper.ALL, orderby=~db.tr_paper.submission_time)
     post_list = []
+    '''
     for p in list:
         #if p.board == my_board[0].id:
         if p.topic == my_topic.id:
             post_list.append(p)
+    '''
     print post_list.__len__()
-    return dict(paper_list=post_list)
+    return dict(paper_list=list)
 
 def new_paper():
-    form = SQLFORM(db.papers)
+    form = SQLFORM(db.tr_paper)
     if form.process(). accepted:
-        session.flash = T("Added topic")
+        #if db(db.topic_paper_affiliation.paper)
+        session.flash = T("Added paper")
         redirect(URL('default', 'index'))
     return dict(form=form)
 

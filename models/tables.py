@@ -32,48 +32,21 @@ db.define_table('tr_user',
 db.tr_user.joined.default = datetime.utcnow()
 db.tr_user.joined.readable = db.tr_user.joined.writable = False
 
+db.define_table('topics',
+                Field('name')
+                )
+
 db.define_table('tr_reviewer',
                 Field('reputation', 'float'),
                 Field('num_reviewed', 'integer'),
-                Field('topic' 'reference topics'),
+                Field('topic', 'reference topics'),
 )
 
 #many to many relationship between users and reviewers
 db.define_table('user_reviewer_affiliation',
-                Field('user', 'reference tr_user'),
+                Field('review_user', 'reference tr_user'),
                 Field('reviewer', 'reference tr_reviewer'),
 )
-
-
-db.define_table('topics',
-                Field('name'),
-                #Field('subtopic')
-                )
-
-
-#many to many relationship between topics and papers
-db.define_table('topic_paper_affiliation',
-                Field('topic', 'reference topics'),
-                Field('paper' 'reference tr_paper'),
-                )
-
-db.define_table('tr_review',
-                Field('review_content', 'text'),
-                Field('score', 'float'),
-                Field('review_time', 'datetime'),
-                Field('score_before', 'float'),
-                Field('paper', 'reference tr_paper'),
-                Field('paper content', 'reference tr_paper_content')
-                )
-db.tr_review.review_time.default = datetime.utcnow()
-
-
-#many to many between reviewer(s) and reviews
-db.define_table('reviewer_review_affiliation',
-                Field('reviewer', 'reference tr_reviewer'),
-                Field('review', 'reference tr_review'),
-                )
-
 
 #
 db.define_table('tr_paper',
@@ -88,23 +61,41 @@ db.define_table('tr_paper',
                 Field('avg_quality', 'float'),
                 Field('num_reviews', 'integer'),
                 )
-db.papers.submission_time.default = datetime.utcnow()
+db.tr_paper.submission_time.default = datetime.utcnow()
+db.tr_paper.submission_time.writable = False
 
 
 db.define_table('tr_paper_content',
-                Field('content', 'text'),
-                Field('version', 'integer'),
+                Field('paper_content', 'text'),
+                Field('paper_version', 'integer'),
                 Field('paper_title', 'reference tr_paper'),
               #  Field('date', 'text'),
 )
 
 
-db.papers.topic.default = request.args(0)
-db.papers.topic.writable = False
-db.papers.submission_time.writable = False
+db.define_table('tr_review',
+                Field('review_content', 'text'),
+                Field('score', 'float'),
+                Field('review_time', 'datetime'),
+                Field('score_before', 'float'),
+                Field('paper', 'reference tr_paper'),
+                Field('paper_content', 'reference tr_paper_content')
+                )
+db.tr_review.review_time.default = datetime.utcnow()
 
 
+#many to many between reviewer(s) and reviews
+db.define_table('reviewer_review_affiliation',
+                Field('reviewer', 'reference tr_reviewer'),
+                Field('review', 'reference tr_review'),
+                )
 
+
+#many to many relationship between topics and papers
+db.define_table('topic_paper_affiliation',
+                Field('topic', 'reference topics'),
+                Field('paper', 'reference tr_paper'),
+                )
 
 #db.messages.board.readable = db.messages.board.writable = False
 
