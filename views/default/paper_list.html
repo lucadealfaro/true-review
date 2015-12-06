@@ -9,11 +9,15 @@
 
 <div>{{=A('Create New Paper', _href=URL('default', 'new_paper', args=[request.args(0)]))}}</div>
 
+<br>
+
 {{for p in paper_list:}}
     <div class="entry">
-        <span class="boardtitle">{{=p.title}}</span>
+        <p class="title">{{=A(p.title, _href=URL('default', 'view_paper', args=[request.args(0), p.id]))}}</p>
     </div>
 {{pass}}
+
+
 
 </body>
 </html>

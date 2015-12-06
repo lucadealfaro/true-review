@@ -79,9 +79,16 @@ db.define_table('tr_review',
                 Field('review_time', 'datetime'),
                 Field('score_before', 'float'),
                 Field('paper', 'reference tr_paper'),
-                Field('paper_content', 'reference tr_paper_content')
+                #Field('paper_content', 'reference tr_paper_content') #causing problems in debug, to add later
                 )
 db.tr_review.review_time.default = datetime.utcnow()
+db.tr_review.review_time.writable = db.tr_review.paper.writable = False
+db.tr_review.score_before.readable = db.tr_review.score_before.writable = False
+db.tr_review.score_before.default = 0
+db.tr_review.paper.default = request.args(0)
+#db.tr_review.paper_content.writable = False
+#db.tr_review.paper_content.default = request.args(1)
+
 
 
 #many to many between reviewer(s) and reviews

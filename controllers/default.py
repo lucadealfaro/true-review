@@ -55,7 +55,14 @@ def user():
     return dict(form=auth())
 
 def review_paper():
-    return dict()
+    form = SQLFORM(db.tr_review)
+    form.vars.paper = request.args(0)
+    if form.process().accepted:
+        #if db(db.topic_paper_affiliation.paper)
+        session.flash = T("Added review")
+        redirect(URL('default', 'index'))
+    return dict(form=form)
+
 
 
 @cache.action()
@@ -95,6 +102,15 @@ def paper_list():
     '''
     print post_list.__len__()
     return dict(paper_list=list)
+
+def view_paper():
+    my_paper = db.tr_paper(request.args(0))
+    if my_paper is None:
+        session.flash = T("No such paper")
+        redirect(URL('default', 'index'))
+    review_list = db(db.tr_review.paper == request.args(1)).select()
+    print review_list
+    return dict(my_paper=my_paper, reviews=review_list)
 
 def new_paper():
     form = SQLFORM(db.tr_paper)
