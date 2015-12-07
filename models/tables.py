@@ -85,7 +85,7 @@ db.tr_review.review_time.default = datetime.utcnow()
 db.tr_review.review_time.writable = db.tr_review.paper.writable = False
 db.tr_review.score_before.readable = db.tr_review.score_before.writable = False
 db.tr_review.score_before.default = 0
-db.tr_review.paper.default = request.args(0)
+db.tr_review.paper.default = request.args(1)
 #db.tr_review.paper_content.writable = False
 #db.tr_review.paper_content.default = request.args(1)
 

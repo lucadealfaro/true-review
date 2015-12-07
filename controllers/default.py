@@ -58,8 +58,9 @@ def user():
 
 def review_paper():
     form = SQLFORM(db.tr_review)
-    form.vars.paper = request.args(0)
+    form.vars.paper = request.args(1)
     if form.process().accepted:
+        db.topic_paper_affiliation.update_or_insert(topic=request.args(0), paper=request.args(1))
         session.flash = T("Added review")
         redirect(URL('default', 'index'))
     return dict(form=form)
@@ -104,7 +105,7 @@ def paper_list():
     return dict(paper_list=list)
 
 def view_paper():
-    my_paper = db.tr_paper(request.args(0))
+    my_paper = db.tr_paper(request.args(1))
     if my_paper is None:
         session.flash = T("No such paper")
         redirect(URL('default', 'index'))
