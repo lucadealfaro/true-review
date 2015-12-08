@@ -57,6 +57,9 @@ auth = Auth(db)
 service = Service()
 plugins = PluginManager()
 
+#auth.settings.extra_fields[auth.settings.table_user_name] = [Field('joined', 'datetime')]
+
+
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
 

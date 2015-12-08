@@ -8,6 +8,8 @@
 ## - download is for downloading files uploaded in the db (does streaming)
 #########################################################################
 
+from xml.dom import minidom
+
 #@auth.requires_login()
 def index():
     """
@@ -111,6 +113,33 @@ def view_paper():
         redirect(URL('default', 'index'))
     review_list = db(db.tr_review.paper == request.args(1)).select()
     return dict(my_paper=my_paper, reviews=review_list)
+
+#modified for arxiv
+def view_paper_arxiv():
+    my_paper = db.tr_paper(paper_id=request.args(1))
+    if my_paper is None:
+        session.flash = T("No such paper")
+        redirect(URL('default', 'index'))
+    #review_list = db(db.tr_review.paper == request.args(1)).select()
+    review_list=[]
+    return dict(my_paper=my_paper, reviews=review_list)
+
+def view_paper_arxiv():
+    import urllib
+    url = 'http://export.arxiv.org/api/query?id_list=1512.02162'
+    data = urllib.urlopen(url).read()
+    #print data
+
+    xmldoc = minidom.parseString(data)
+    authlist = xmldoc.getElementsByTagName('name')
+    print(len(authlist))
+    for s in authlist:
+        print(s.childNodes[0].nodeValue)
+
+    titles = xmldoc.getElementsByTagName('title')
+    print itemlist[1].childNodes[0].nodeValue
+
+    return dict(paper_data=data, authors=authlist,  )
 
 def new_paper():
     form = SQLFORM(db.tr_paper)

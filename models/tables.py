@@ -33,7 +33,8 @@ db.tr_user.joined.default = datetime.utcnow()
 db.tr_user.joined.readable = db.tr_user.joined.writable = False
 
 db.define_table('topics',
-                Field('name')
+                Field('name'),
+                Field('arxiv_category')
                 )
 
 db.define_table('tr_reviewer',
@@ -53,8 +54,8 @@ db.define_table('tr_paper',
                 Field('title'),
                 Field('author'), # Ok. Later perhaps we can link papers to authors who are also reviewers.
                 #Field('topic', 'reference topics'),
-                Field('submission_time', 'datetime'),
-                Field('abstract', 'text'),
+                Field('submission_time', 'datetime'),#change to arxiv submit date
+                Field('abstract', 'text'), #remove later? same as summary
                 Field('summary', 'text'),
                 # We cache some quantities.
                 Field('avg_quality', 'float'),
