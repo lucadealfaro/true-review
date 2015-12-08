@@ -137,9 +137,9 @@ def view_paper_arxiv():
         print(s.childNodes[0].nodeValue)
 
     titles = xmldoc.getElementsByTagName('title')
-    print itemlist[1].childNodes[0].nodeValue
+    print titles[1].childNodes[0].nodeValue
 
-    return dict(paper_data=data, authors=authlist,  )
+    return dict(paper_data=data, authors=authlist, titles=titles )
 
 def new_paper():
     form = SQLFORM(db.tr_paper)
