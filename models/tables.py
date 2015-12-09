@@ -20,23 +20,26 @@ from datetime import datetime
 # Is this a user, or a user for a single topic?  Seems more like a user, but then we need
 # a many to many relation to topics that includes also the reputation of the user for that topic.
 db.define_table('tr_user',
-                Field('user_id', db.auth_user),
-                Field('name'),
+                Field('author', db.auth_user, default=auth.user_id),
+                #Field('name'),
                 Field('joined', 'datetime'),
                 #Field('bio', 'text'),
-                Field('email'),
-               # Field('topic', 'reference topics')
-                #Field('user_active', 'boolean'),
+                #Field('email'),
+                Field('anon', 'boolean', default=False),
+                #Field('topic', 'reference topics')
+                Field('user_active', 'boolean', default=True),
                 #Field('on_top_page', 'boolean')
                 )
 db.tr_user.joined.default = datetime.utcnow()
 db.tr_user.joined.readable = db.tr_user.joined.writable = False
 
+#data for a topic. User can specify a name and arxive category
 db.define_table('topics',
                 Field('name'),
                 Field('arxiv_category')
                 )
 
+#a reviewer for a topic. a tr_user can have many of these
 db.define_table('tr_reviewer',
                 Field('reputation', 'float'),
                 Field('num_reviewed', 'integer'),
@@ -49,7 +52,7 @@ db.define_table('user_reviewer_affiliation',
                 Field('reviewer', 'reference tr_reviewer'),
 )
 
-#
+#data needed for a paper
 db.define_table('tr_paper',
                 Field('title'),
                 Field('author'), # Ok. Later perhaps we can link papers to authors who are also reviewers.
@@ -64,8 +67,10 @@ db.define_table('tr_paper',
                 )
 db.tr_paper.submission_time.default = datetime.utcnow()
 db.tr_paper.submission_time.writable = False
+db.tr_paper.avg_quality.default = 0
+db.tr_paper.num_reviews.default = 0
 
-
+#this table is to keep track of the version of each paper
 db.define_table('tr_paper_content',
                 Field('paper_content', 'text'),
                 Field('paper_version', 'integer'),
@@ -73,7 +78,7 @@ db.define_table('tr_paper_content',
               #  Field('date', 'text'),
 )
 
-
+#this is for each review of a paper
 db.define_table('tr_review',
                 Field('review_content', 'text'),
                 Field('score', 'float'),

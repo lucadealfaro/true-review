@@ -9,6 +9,7 @@
 #########################################################################
 
 from xml.dom import minidom
+from datetime import datetime
 
 #@auth.requires_login()
 def index():
@@ -34,6 +35,7 @@ def index():
 
     tr_users = db().select(db.tr_user.ALL)
     topic_list = db().select(db.topics.ALL)
+
     return dict(tr_users=tr_users, topic_list=topic_list)
 
 @auth.requires_login()
@@ -56,18 +58,23 @@ def user():
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
     """
+    auth.settings.register_onaccept.append(lambda form: (db.tr_user.insert(author = auth.user_id, joined=datetime.utcnow(), anon=False)) if
+                                                             db(db.tr_user.author == auth.user_id).select().first() is None else None
+                                        )
     return dict(form=auth())
 
+@auth.requires_login()
 def review_paper():
     form = SQLFORM(db.tr_review)
     form.vars.paper = request.args(1)
+    paper = db(db.tr_paper.paper_id == request.args(1)).select().first()
+    topic = db(db.topics.arxiv_category == request.args(0)).select().first()
+    form.vars.paper = paper.id
     if form.process().accepted:
-        db.topic_paper_affiliation.update_or_insert(topic=request.args(0), paper=request.args(1))
+        db.topic_paper_affiliation.update_or_insert(topic=topic.id, paper=paper.id)
         session.flash = T("Added review")
         redirect(URL('default', 'index'))
     return dict(form=form)
-
-
 
 @cache.action()
 def download():
@@ -91,7 +98,7 @@ def reset():
   db(db.posts.id > 0).delete()
   db(db.boards.id > 0).delete()
 
-def paper_list():
+def paper_list_old():
     my_topic = db.topics(request.args(0))
     if my_topic is None:
         session.flash = T("No such board")
@@ -106,6 +113,16 @@ def paper_list():
     '''
     return dict(paper_list=list)
 
+#paper_list with arxiv implementation
+def paper_list():
+    my_topic = db.topics(arxiv_category=request.args(0))
+    if my_topic is None:
+        session.flash = T("No such board")
+        redirect(URL('default', 'index'))
+    list = db().select(db.tr_paper.ALL, orderby=~db.tr_paper.submission_time)
+
+    return dict(paper_list = list)
+
 def view_paper():
     my_paper = db.tr_paper(request.args(1))
     if my_paper is None:
@@ -114,32 +131,30 @@ def view_paper():
     review_list = db(db.tr_review.paper == request.args(1)).select()
     return dict(my_paper=my_paper, reviews=review_list)
 
-#modified for arxiv
-def view_paper_arxiv():
-    my_paper = db.tr_paper(paper_id=request.args(1))
-    if my_paper is None:
-        session.flash = T("No such paper")
-        redirect(URL('default', 'index'))
-    #review_list = db(db.tr_review.paper == request.args(1)).select()
-    review_list=[]
-    return dict(my_paper=my_paper, reviews=review_list)
-
 def view_paper_arxiv():
     import urllib
     url = 'http://export.arxiv.org/api/query?id_list=1512.02162'
+    url = 'http://export.arxiv.org/api/query?id_list=' + request.args(1)
     data = urllib.urlopen(url).read()
     #print data
 
+    #here we use minidom from xml.dom to parse the data from the acquired xml
     xmldoc = minidom.parseString(data)
-    authlist = xmldoc.getElementsByTagName('name')
-    print(len(authlist))
-    for s in authlist:
-        print(s.childNodes[0].nodeValue)
+    authlist = xmldoc.getElementsByTagName('name') #returns a list which we can use in the xml
 
     titles = xmldoc.getElementsByTagName('title')
-    print titles[1].childNodes[0].nodeValue
+    #we can print out values from minidom by doing the following
+    #print titles[1].childNodes[0].nodeValue
+    #titles[0] is the title of the html page, titles[1] is the paper's title
 
-    return dict(paper_data=data, authors=authlist, titles=titles )
+    abstract = xmldoc.getElementsByTagName('summary')
+    published = xmldoc.getElementsByTagName('published')
+
+    paper = db(db.tr_paper.paper_id == request.args(1)).select().first()
+    review_list = db(db.tr_review.paper == paper.id).select()
+
+    return dict(paper_data=data, authors=authlist, titles=titles, abstract=abstract, published=published,
+                reviews=review_list )
 
 def new_paper():
     form = SQLFORM(db.tr_paper)

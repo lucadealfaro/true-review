@@ -17,7 +17,7 @@
 
 {{for p in paper_list:}}
     <div class="entry">
-        <p class="title">{{=A(p.title, _href=URL('default', 'view_paper', args=[request.args(0), p.id]))}}</p>
+        <p class="title">{{=A(p.title, _href=URL('default', 'view_paper_arxiv', args=[request.args(0), p.paper_id]))}}</p>
                                                                 <!-- change p.id to p.paper_id for arxiv implementation-->
     </div>
 {{pass}}

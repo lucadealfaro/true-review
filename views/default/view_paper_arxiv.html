@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{{extend 'layout.html'}}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +7,47 @@
 </head>
 <body>
 
-{{=paper_data}}
+<div>{{=A(icon_home + 'Home Page', _href=URL('default', 'index'))}}</div>
+
+
+<div class="class-header">
+    <h1> View Paper Details</h1>
+</div>
+
+<div><strong>Title:</strong>
+    <br><p>{{=titles[1].childNodes[0].nodeValue}}</p></div>
+
+<div><strong>Author(s):</strong>
+    <p>
+    {{for s in authors:}}
+        <div>{{=s.childNodes[0].nodeValue}}</div>
+    {{pass}}
+    </p>
+</div>
+
+<div><strong>Abstract: </strong>
+    <br><p>{{=abstract[0].childNodes[0].nodeValue}}</p>
+</div>
+
+<div><strong>Date: </strong>
+    <br><p>{{=published[0].childNodes[0].nodeValue}}</p>
+</div>
+
+<h2>{{=A("Review This Paper",  _class='btn btn-default', _href=URL('default', 'review_paper',
+    args=[request.args(0), request.args(1)]), _target='new')}}</h2>
+
+<div class="reviews">
+    {{for index,r in enumerate (reversed(reviews)):}}
+    <div class="entry">
+        <hr>
+        <span><strong>#{{=index+1}}</strong></span><br>
+        <span><strong>Review Content: </strong><br>{{=r.review_content}}</span><br>
+        <span><strong>Score: </strong>{{=r.score}}</span><br>
+    </div>
+{{pass}}
+</div>
+
+
 
 </body>
 </html>

@@ -9,6 +9,7 @@
         <p></p>
     </div>
 {{else:}}
+
 <!--
     <div>{{=A('Add board', _class='btn btn-success', _href=URL('default', 'new_board'))}}</div>
 -->
@@ -29,7 +30,7 @@
 <div class="class-board-wrapper">
     {{for t in topic_list:}}
         <div class="create-post-a">
-            <a href="{{=URL('default', 'paper_list', args=[t.id])}}">
+            <a href="{{=URL('default', 'paper_list', args=[t.arxiv_category])}}">
                 <div class="create-post-a">
                     <span>{{=t.name}}</span>
                 </div>
