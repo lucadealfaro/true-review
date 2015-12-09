@@ -36,7 +36,16 @@ def index():
     tr_users = db().select(db.tr_user.ALL)
     topic_list = db().select(db.topics.ALL)
 
-    return dict(tr_users=tr_users, topic_list=topic_list)
+    links = [dict(header='View Paper',
+                 body = lambda r: A(I(_class='fa fa-thumbs-down'), '    Papers', _class='btn btn-primary',
+                                    _href=URL('default', 'paper_list', args=[r.arxiv_category])))]
+
+    q = db.topics
+    grid = SQLFORM.grid(q,
+                        links=links,
+                        )
+
+    return dict(tr_users=tr_users, topic_list=topic_list, grid=grid)
 
 @auth.requires_login()
 def profile():
