@@ -37,7 +37,7 @@ def index():
     topic_list = db().select(db.topics.ALL)
 
     links = [dict(header='View Paper',
-                 body = lambda r: A(I(_class='fa fa-thumbs-down'), '    Papers', _class='btn btn-primary',
+                 body = lambda r: A(icon_paper, '    Papers', _class='btn btn-primary',
                                     _href=URL('default', 'paper_list', args=[r.arxiv_category])))]
 
     q = db.topics
@@ -82,9 +82,34 @@ def review_paper():
     form.vars.paper = paper.id
     curr_tr_user = db.tr_user(author=auth.user_id)
     if form.process(onvalidation=assign).accepted:
+        db(db.tr_paper.paper_id == request.args(1)).update(num_reviews=db.tr_paper.num_reviews + 1)
+        avg_score()
         session.flash = T("Added review")
         redirect(URL('default', 'index'))
     return dict(form=form)
+
+def avg_score():
+    paper = db(db.tr_paper.paper_id == request.args(1)).select().first()
+    review_list = db(db.tr_review.paper == paper.id).select()
+    print paper
+    print review_list
+    sum = 0
+    for review in review_list:
+       sum += review.score
+    print sum
+
+    if paper.num_reviews == 0:
+        avg_score = 0
+        #db(db.tr_paper.paper_id == request.args(1)).select().first().avg_quality = avg_score
+        db(db.tr_paper.paper_id == request.args(1)).update(avg_quality=avg_score)
+    else:
+        avg_score = (sum/paper.num_reviews)
+        print paper.num_reviews
+        #db(db.tr_paper.paper_id == request.args(1)).select().first().avg_quality = avg_score
+        db(db.tr_paper.paper_id == request.args(1)).update(avg_quality=avg_score)
+
+    print avg_score
+    print db(db.tr_paper.paper_id == request.args(1)).select().first().avg_quality
 
 #assigns the reviewer to the review if the form is accepted
 def assign(form):
@@ -145,48 +170,40 @@ def paper_list():
     if my_topic is None:
         session.flash = T("No such board")
         redirect(URL('default', 'index'))
-    list = db().select(db.tr_paper.ALL, orderby=~db.tr_paper.submission_time)
+    list1 = db().select(db.tr_paper.ALL, orderby=~db.tr_paper.submission_time)
     #query_json()
     ##########
-    import urllib
-    url = 'http://export.arxiv.org/api/query?search_query=cat:' + request.args(0)
-    data = urllib.urlopen(url).read()
-    xmldoc = minidom.parseString(data)
+    my_id = my_topic.id
+    print my_id
+    list = db(db.topic_paper_affiliation.topic == my_id).select()
+    paper = db(db.topic_paper_affiliation.paper == my_id).select().first()
+    list2 = []
+    list3 = []
+    print list
+    if list.first() is None:
+        return dict(paper_list=[])
+    else:
+        #print paper_id[0].id
+        #list = db(db.tr_paper.id == paper.id).select()
+        list2 = []
+        print len(list)
+        for index, r in enumerate(list):
+            #print db(db.tr_paper.id)
+            print r.id
+            #print db.tr_paper(r.paper)
+            list2.append(db(db.tr_paper.id == r.id))
+        print list2
+        persons_and_dogs = db((db.topics.id==db.topic_paper_affiliation.topic)  & (db.tr_paper.id==db.topic_paper_affiliation.paper))
+        print persons_and_dogs
+        for row in persons_and_dogs(db.topics.id==my_topic.id).select():
+            print row.tr_paper.title
+            list3.append(row.tr_paper)
+        print list3
+        print list1
 
-    authlist = []
-    ids = []
-    titles = []
-    abstracts = []
-    published = []
-    updated = []
-    entries = []
+    #print list
+    return dict(paper_list=list3)
 
-
-    entrylist = xmldoc.getElementsByTagName('entry')
-    for item, entry in enumerate(entrylist):
-        title = entry.getElementsByTagName("title")
-        #print title[0].childNodes[0].nodeValue
-        titles.append(title[0].childNodes[0].nodeValue)
-        #print entry.getElementsByTagName("id")[0].childNodes[0].nodeValue
-        ids.append(entry.getElementsByTagName("id")[0].childNodes[0].nodeValue)
-        authors = entry.getElementsByTagName("name")
-        auth_string = ""
-        for index, el in enumerate(authors):
-            auth_string += authors[index].childNodes[0].nodeValue + '/n'
-        authlist.append(auth_string)
-
-        #print type(entry)
-        #print title
-        #authlist.append(entry.attributes['name'].value)
-        #titles.append(entry.attributes['title'].value)
-        #abstracts.append(entry.attributes['abstracts'].value)
-        #published.append(entry.attributes['published'].value)
-        #updated.append(entry.attributes['updated'].value)
-    print authlist
-    print ids
-    print titles
-
-    return dict(paper_list = list, authlist=authlist, ids=ids, titles=titles, elements=entrylist)
 
 def view_paper():
     my_paper = db.tr_paper(request.args(1))
@@ -225,8 +242,10 @@ def query_json():
 
 def view_paper_arxiv():
     import urllib
+    my_paper = db.tr_paper(paper_id = request.args(1))
     url = 'http://export.arxiv.org/api/query?id_list=1512.02162'
     url = 'http://export.arxiv.org/api/query?id_list=' + request.args(1)
+    print url + '*********************************'
     data = urllib.urlopen(url).read()
 
     #here we use minidom from xml.dom to parse the data from the acquired xml
@@ -242,14 +261,18 @@ def view_paper_arxiv():
     published = xmldoc.getElementsByTagName('published')
 
     paper = db(db.tr_paper.paper_id == request.args(1)).select().first()
+    print "***"
+    print paper
+    print "***"
     review_list = db(db.tr_review.paper == paper.id).select()
+    print review_list
     has_reviewed = False
     for r in review_list:
         if r.auth_reviewer == auth.user_id:
             has_reviewed = True
-
+    print len(review_list)
     return dict(paper_data=data, authors=authlist, titles=titles, abstract=abstract, published=published,
-                reviews=review_list, has_reviewed=has_reviewed )
+                reviews=review_list, has_reviewed=has_reviewed, my_paper=my_paper )
 
 def user_in_reviews():
     reviewer_id = r.reviewer
@@ -261,6 +284,7 @@ def user_in_reviews():
 
 def new_paper():
     form = SQLFORM(db.tr_paper)
+    topic = db(db.topics.arxiv_category == request.args(0)).select().first()
     papers = db().select(db.tr_paper.ALL)
     if form.process(). accepted:
         '''
@@ -268,6 +292,8 @@ def new_paper():
                 (db.topic_paper_affiliation.paper==len(papers))) == 0:
             print 'this is a new paper and it does not have an entry in the intermediate table'
         '''
+        #add the paper to the current topic if not already in the relation table
+        db.topic_paper_affiliation.update_or_insert(topic=topic.id, paper=form.vars.id)
         session.flash = T("Added paper")
         redirect(URL('default', 'index'))
     return dict(form=form)

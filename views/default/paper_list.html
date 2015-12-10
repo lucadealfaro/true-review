@@ -25,69 +25,137 @@
 
 <hr>
 
-<div id="target"></div>
-
-{{for index, e in enumerate(elements):}}
-    {{id = ids[index].split('/')}}
-    {{=id[5]}}
-    {{edited_topic = request.args(0)}}
-    {{ed=edited_topic.split('.')}}
-    {{=ed[0]}}
-    <div class="entry">
-        <p class="title">{{=A(titles[index], _href=URL('default', 'view_paper_arxiv', args=[request.args(0), id[5]]))}}</p>
-                                                                <!-- change p.id to p.paper_id for arxiv implementation-->
-    </div>
-{{pass}}
-<!--
-<script id="template" type="text/ractive">
-
-hello
-<div>
-<div>
-<div>
-<div>
-    <form>
-        <input value="{% active_draft %}"></input>
-    </form>
-    <form>
-        <input value="{% active_draft %}"></input>
-    </form>
-    <form>
-        <input value="{% active_draft %}"></input>
-    </form>
-</div>
-
-
-hi
-</script>
--->
-
-<script>
-$(function() {
-  // Ractive object
-  var MAIN = new Ractive({
-    el: '#target',
-    template: '#template',
-    delimiters: ['{%', '%}'],
-    tripleDelimiters: ['{%%', '%%}'],
-    data: {
-      url: ""  ,
-      msg_dict: {},
-      //draft_id: "{{'''=draft_id'''}}",
-      active_draft: "",
-      loading: true
-    },
-  });
-
-});
-</script>
-
-
-
-
 </html>
 
+<hr>
+<h4>Number of Papers per Average Score Range</h4>
+<div id="wrapper">
 
+    <ul class="graph">
+        <!--for topic?-->
+        {{num10 = paper_num10 = 0}}
+        {{num9 = paper_num9 = 0}}
+        {{num8 = paper_num8 = 0}}
+        {{num7 = paper_num7 = 0}}
+        {{num6 = paper_num6 = 0}}
+        {{num5 = paper_num5 = 0}}
+        {{num4 = paper_num4 = 0}}
+        {{num3 = paper_num3 = 0}}
+        {{num2 = paper_num2 = 0}}
+        {{num1 = paper_num1 = 0}}
+        {{for p in paper_list:}}
+        {{paper_num = len(paper_list)}}
 
+        <!--num = number of papers in each score range-->
 
+        <!--paper_num# = scaled percentage for that score-->
+        <!--{{paper_num6 = 0}}-->
 
+            {{if p.avg_quality >= 9:}}
+                {{num10 +=1}}
+                {{paper_num10 += (100*num10/paper_num)}}
+
+            {{elif 9 > p.avg_quality and p.avg_quality >= 8:}}
+                {{num9 +=1}}
+                {{paper_num9 += (100*num9/paper_num)}}
+
+            {{elif 8 > p.avg_quality >= 7:}}
+                {{num8 +=1}}
+                {{paper_num8 += (100*num8/paper_num)}}
+
+            {{elif 7 > p.avg_quality >= 6:}}
+                {{num7 +=1}}
+                {{paper_num7 += (100*num7/paper_num)}}
+
+            {{elif 6 > p.avg_quality >= 5:}}
+                {{num6 +=1}}
+                {{paper_num6 += (100*num6/paper_num)}}
+
+            {{elif 5 > p.avg_quality >= 4:}}
+                {{num5 +=1}}
+                {{paper_num5 += (100*num5/paper_num)}}
+
+            {{elif 4 > p.avg_quality >= 3:}}
+                {{num4 +=1}}
+                {{paper_num4 += (100*num4/paper_num)}}
+
+            {{elif 3 > p.avg_quality >= 2:}}
+                {{num3 +=1}}
+                {{paper_num3 += (100*num3/paper_num)}}
+
+            {{elif 2 > p.avg_quality >= 1:}}
+                {{num2 +=1}}
+                {{paper_num2 += (100*num2/paper_num)}}
+
+            {{else:}}
+                {{num1 += 1}}
+                {{paper_num1 += (100*num1/paper_num)}}
+
+            {{pass}}
+        {{pass}}
+
+        <div class="verticalLine">
+        <li>
+            <div id="total10">9/10-10/10 Rated Papers</div>
+            <a href="#">{{=num10}} papers</a>
+            <span class="percentage" style="width: {{=paper_num10}}%"></span>
+
+        </li>
+        <li>
+            <div id="total9">8/10-9/10 Rated Papers</div>
+            <a href="#">{{=num9}} papers</a>
+            <span class="percentage" style="width: {{=paper_num9}}%"></span>
+
+        </li>
+        <li>
+            <div id="total8">7/10-8/10 Rated Papers</div>
+            <a href="#">{{=num8}} papers</a>
+            <span class="percentage" style="width: {{=paper_num8}}%"></span>
+
+        </li>
+        <li>
+            <div id="total7">6/10-7/10 Rated Papers</div>
+            <a href="#">{{=num7}} papers</a>
+            <span class="percentage" style="width: {{=paper_num7}}%"></span>
+
+        </li>
+        <li>
+            <div id="total6">5/10-6/10 Rated Papers</div>
+            <a href="#">{{=num6}} papers</a>
+            <span class="percentage" style="width: {{=paper_num6}}%"></span>
+
+        </li>
+        <li>
+            <div id="total5">4/10-5/10 Rated Papers</div>
+            <a href="#">{{=num5}} papers</a>
+            <span class="percentage" style="width: {{=paper_num5}}%"></span>
+
+        </li>
+        <li>
+            <div id="total4">3/10-4/10 Rated Papers</div>
+            <a href="#">{{=num4}} papers</a>
+            <span class="percentage" style="width: {{=paper_num4}}%"></span>
+
+        </li>
+        <li>
+            <div id="total3">2/10-3/10 Rated Papers</div>
+            <a href="#">{{=num3}} papers</a>
+            <span class="percentage" style="width: {{=paper_num3}}%"></span>
+
+        </li>
+        <li>
+            <div id="total2">1/10-2/10 Rated Papers</div>
+            <a href="#">{{=num2}} papers</a>
+            <span class="percentage" style="width: {{=paper_num2}}%"></span>
+
+        </li>
+        <li>
+            <div id="total1">0/10-1/10 Rated Papers</div>
+            <a href="#">{{=num1}} papers</a>
+            <span class="percentage" style="width: {{=paper_num1}}%"></span>
+
+        </li>
+
+    </ul>
+
+</div>

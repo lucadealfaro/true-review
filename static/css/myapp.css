@@ -53,6 +53,120 @@ div.icons {
   text-align: right;
 }
 */
+
+body {
+  margin: 0;
+  background: #FFF;
+  font-family: verdana, sans-serif;
+  font-size: 1em;
+}
+
+#wrapper {
+  width: 1px;
+  margin: 0 ;
+  padding: 1px
+}
+
+#total1 {
+  text-align: right;
+}
+
+#total2 {
+  text-align: right;
+}
+
+#total3 {
+  text-align: right;
+}
+
+#total4 {
+  text-align: right;
+}
+
+#total5 {
+  text-align: right;
+}
+
+#total6 {
+  text-align: right;
+}
+
+#total7 {
+  text-align: right;
+}
+
+#total8 {
+  text-align: right;
+}
+
+#total9 {
+  text-align: right;
+}
+
+#total10 {
+  text-align: right;
+}
+
+.verticalLine {
+    border-left: thick solid #000000;
+    transform: rotate(0deg);
+}
+
+.horizontallLine {
+    border-bottom: thick solid #000000;
+}
+
+a{
+  color: #0066DD
+  font-size: 0em;
+  text-decoration: none;
+}
+
+.graph{
+  padding:0;
+  width: 50em;
+  float: left;
+  boarder-bottom: 20px solid #888
+}
+
+.graph li {
+  position: relative;
+  list-style: none;
+  boarder-top: 1px solid #888;
+}
+
+.graph li a {
+  display: block;
+  padding: 1em;
+  position: relative;
+  z-index: 100;
+}
+
+.graph li:hover {
+  background: #EEE;
+}
+
+.graph .percentage{
+  height: 95%;
+  background: #66EE99;
+  opacity: 0.5;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-indent: -20000px;
+}
+
+.graph .total {
+  color: #222;
+  font-weight: bold;
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  line-height: 1em;
+}
+
 /* line 1, ../sass/_main.scss */
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 /* line 58, ../sass/_main.scss */

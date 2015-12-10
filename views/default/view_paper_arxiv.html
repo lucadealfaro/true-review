@@ -40,19 +40,24 @@
     args=[request.args(0), request.args(1)]), _target='new')}}</h2>
 {{pass}}
 
+{{=my_paper.avg_quality}}
+
 <div class="reviews">
     {{for index,r in enumerate (reversed(reviews)):}}
     <div class="entry">
         <hr>
-        <span><strong>#{{=index+1}} : </strong></span>
+        <span><strong>#{{=index+1}} :</strong></span>
         <span><strong> {{
             #Long chain of commands to get user who wrote review
             reviewer_id = r.reviewer
+            #response.write(reviewer_id)
             #print reviewer_id
             tr_user_id = db(db.tr_reviewer.id == reviewer_id).select().first().id
+            #response.write(tr_user_id)
             #print tr_user_id
-            auth_userid = db(db.tr_user.id == tr_user_id).select().first().author
-            response.write(db.auth_user(auth_userid).first_name)
+            #auth_userid = db(db.tr_user.id == tr_user_id).select().first().author
+            #response.write(db.auth_user(auth_userid).first_name)
+            response.write(db.auth_user(r.auth_reviewer).first_name)
         }}</strong></span><br>
         <span><strong>Review Content: </strong><br>{{=r.review_content}}</span><br>
         <span><strong>Score: </strong>{{=r.score}}</span><br>

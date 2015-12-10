@@ -69,6 +69,10 @@ db.define_table('tr_paper',
                 )
 db.tr_paper.submission_time.default = datetime.utcnow()
 db.tr_paper.submission_time.writable = False
+db.tr_paper.author.readable = db.tr_paper.abstract.readable = db.tr_paper.summary.readable = \
+        db.tr_paper.avg_quality.readable = db.tr_paper.num_reviews.readable = False
+db.tr_paper.author.writable = db.tr_paper.abstract.writable = db.tr_paper.summary.writable = \
+        db.tr_paper.avg_quality.writable = db.tr_paper.num_reviews.writable = False
 db.tr_paper.avg_quality.default = 0
 db.tr_paper.num_reviews.default = 0
 
@@ -98,6 +102,7 @@ db.tr_review.score_before.default = 0
 db.tr_review.paper.default = request.args(1)
 db.tr_review.auth_reviewer.readable = db.tr_review.auth_reviewer.writable = False
 db.tr_review.reviewer.writable = False
+db.tr_review.reviewer.requires = IS_INT_IN_RANGE(1, 10)
 
 #db.tr_review.paper_content.writable = False
 #db.tr_review.paper_content.default = request.args(1)
