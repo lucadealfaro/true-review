@@ -94,7 +94,6 @@ def review_paper():
         redirect(URL('default', 'index'))
     return dict(form=form)
 
-def assign():
 
 
 @cache.action()
