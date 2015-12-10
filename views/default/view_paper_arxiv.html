@@ -40,7 +40,21 @@
     {{for index,r in enumerate (reversed(reviews)):}}
     <div class="entry">
         <hr>
-        <span><strong>#{{=index+1}}</strong></span><br>
+        <span><strong>#{{=index+1}} : </strong></span>
+        <span><strong> {{
+            #reviewer_id = r.id
+            #tr_user_id = db.tr_reviewer(r.id).first().id
+            #auth_userid = db.tr_user(id = tr_user_id).author
+            #response.write(auth_user(auth_userid).first_name)
+
+            reviewer_id = r.reviewer
+            print reviewer_id
+            tr_user_id = db(db.tr_reviewer.id == r.id).select().first().id
+            print tr_user_id
+            auth_userid = db(db.tr_user.id == tr_user_id).select().first().author
+            response.write(db.auth_user(auth_userid).first_name)
+
+        }}</strong></span><br>
         <span><strong>Review Content: </strong><br>{{=r.review_content}}</span><br>
         <span><strong>Score: </strong>{{=r.score}}</span><br>
     </div>

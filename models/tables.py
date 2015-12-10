@@ -44,9 +44,11 @@ db.define_table('tr_reviewer',
                 Field('reputation', 'float'),
                 Field('num_reviewed', 'integer'),
                 Field('topic', 'reference topics'),
+                Field('tr_user', 'reference tr_user')
 )
 
 #many to many relationship between users and reviewers
+#### NOT USED ANYMORE SINCE THE RELATION IS ONE TO MANY
 db.define_table('user_reviewer_affiliation',
                 Field('review_user', 'reference tr_user'),
                 Field('reviewer', 'reference tr_reviewer'),
@@ -85,6 +87,7 @@ db.define_table('tr_review',
                 Field('review_time', 'datetime'),
                 Field('score_before', 'float'),
                 Field('paper', 'reference tr_paper'),
+                Field('reviewer', 'reference tr_reviewer')
                 #Field('paper_content', 'reference tr_paper_content') #causing problems in debug, to add later
                 )
 db.tr_review.review_time.default = datetime.utcnow()
@@ -92,12 +95,15 @@ db.tr_review.review_time.writable = db.tr_review.paper.writable = False
 db.tr_review.score_before.readable = db.tr_review.score_before.writable = False
 db.tr_review.score_before.default = 0
 db.tr_review.paper.default = request.args(1)
+db.tr_review.reviewer.writable = False
+
 #db.tr_review.paper_content.writable = False
 #db.tr_review.paper_content.default = request.args(1)
 
 
 
 #many to many between reviewer(s) and reviews
+### NOT USED SINCE RELATION IS ONE TO MANY
 db.define_table('reviewer_review_affiliation',
                 Field('reviewer', 'reference tr_reviewer'),
                 Field('review', 'reference tr_review'),
