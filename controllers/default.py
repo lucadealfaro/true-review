@@ -80,20 +80,27 @@ def review_paper():
     topic = db(db.topics.arxiv_category == request.args(0)).select().first()
     form.vars.paper = paper.id
     curr_tr_user = db.tr_user(author=auth.user_id)
-    if form.process().accepted:
-        #add the paper to the current topic if not already in the relation table
-        db.topic_paper_affiliation.update_or_insert(topic=topic.id, paper=paper.id)
-        #make the current user a reviewer for this topic if they are not already one
-        #if the current reviewer and review are not in the tables
-        if db.tr_reviewer(topic=topic.id, tr_user=curr_tr_user.id) is None:
-            db.tr_reviewer.insert(reputation=0, num_reviewed=1, topic=topic.id, tr_user=curr_tr_user.id)
-        this_reviewer = db.tr_reviewer(topic=topic.id, tr_user=curr_tr_user.id)
-        form.vars.reviewer = this_reviewer.id
+    if form.process(onvalidation=assign).accepted:
+
+        #this_reviewer = db.tr_reviewer(topic=topic.id, tr_user=curr_tr_user.id)
+        #form.vars.reviewer = this_reviewer.id
         #db.user_reviewer_affiliation.update_or_insert()
         session.flash = T("Added review")
         redirect(URL('default', 'index'))
     return dict(form=form)
 
+def assign(form):
+    paper = db(db.tr_paper.paper_id == request.args(1)).select().first()
+    curr_tr_user = db.tr_user(author=auth.user_id)
+    topic = db(db.topics.arxiv_category == request.args(0)).select().first()
+    #add the paper to the current topic if not already in the relation table
+    db.topic_paper_affiliation.update_or_insert(topic=topic.id, paper=paper.id)
+    #make the current user a reviewer for this topic if they are not already one
+    #if the current reviewer and review are not in the tables
+    if db.tr_reviewer(topic=topic.id, tr_user=curr_tr_user.id) is None:
+        db.tr_reviewer.insert(reputation=0, num_reviewed=1, topic=topic.id, tr_user=curr_tr_user.id)
+    this_reviewer = db.tr_reviewer(topic=topic.id, tr_user=curr_tr_user.id)
+    form.vars.reviewer = this_reviewer
 
 
 @cache.action()
