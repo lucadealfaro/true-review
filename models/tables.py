@@ -86,7 +86,7 @@ db.define_table('tr_paper_content',
 
 #this is for each review of a paper
 db.define_table('tr_review',
-                Field('review_content', 'text'),
+                Field('review_content', 'text', requires=IS_LENGTH(minsize=100)),
                 Field('score', 'float'),
                 Field('review_time', 'datetime'),
                 Field('score_before', 'float'),
@@ -98,11 +98,12 @@ db.define_table('tr_review',
 db.tr_review.review_time.default = datetime.utcnow()
 db.tr_review.review_time.writable = db.tr_review.paper.writable = False
 db.tr_review.score_before.readable = db.tr_review.score_before.writable = False
+db.tr_review.reviewer.readable = db.tr_review.reviewer.writable = False
 db.tr_review.score_before.default = 0
 db.tr_review.paper.default = request.args(1)
 db.tr_review.auth_reviewer.readable = db.tr_review.auth_reviewer.writable = False
 db.tr_review.reviewer.writable = False
-db.tr_review.reviewer.requires = IS_INT_IN_RANGE(1, 10)
+db.tr_review.score.requires = IS_INT_IN_RANGE(1, 11)
 
 #db.tr_review.paper_content.writable = False
 #db.tr_review.paper_content.default = request.args(1)

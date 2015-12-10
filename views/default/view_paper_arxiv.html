@@ -29,7 +29,7 @@
     <br><p>{{=abstract[0].childNodes[0].nodeValue}}</p>
 </div>
 
-<div><strong>Date: </strong>
+<div><strong>Published: </strong>
     <br><p>{{=published[0].childNodes[0].nodeValue}}</p>
 </div>
 
@@ -40,7 +40,7 @@
     args=[request.args(0), request.args(1)]), _target='new')}}</h2>
 {{pass}}
 
-{{=my_paper.avg_quality}}
+<div>Average Quality: {{=my_paper.avg_quality}}</div>
 
 <div class="reviews">
     {{for index,r in enumerate (reversed(reviews)):}}
@@ -65,7 +65,7 @@
 {{pass}}
 </div>
 
-
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 </body>
 </html>

@@ -13,7 +13,14 @@
 
 <body>
     <div id="entryform">
-        {{=form}}
+        <div>
+            {{=form.custom.begin}}
+            Name: <div>{{=form.custom.widget.name}}</div>
+            Arxiv Category: {{=A("What's This?", _href='http://arxiv.org/help/api/user-manual#subject_classifications', _target='_blank')}}
+                <div>{{=form.custom.widget.arxiv_category}}</div>
+            {{=form.custom.submit}}
+            {{=form.custom.end}}
+        </div>
     </div>
 </body>
 

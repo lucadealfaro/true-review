@@ -11,23 +11,27 @@
 
 <hr>
 
-<div>{{=A('Create New Paper', _href=URL('default', 'new_paper', args=[request.args(0)]))}}</div>
-
+<div>{{=A('+ Create New Paper', _class='btn btn-success', _href=URL('default', 'new_paper', args=[request.args(0)]))}}</div>
+<br>
 <br>
 
 {{for p in paper_list:}}
     <div class="entry">
-        <p class="title">{{=A(p.title, _href=URL('default', 'view_paper_arxiv', args=[request.args(0), p.paper_id]))}}</p>
+        <p><strong>
+         {{=A(p.title, _href=URL('default', 'view_paper_arxiv', args=[request.args(0), p.paper_id]))}}</strong><br>
                                                                 <!-- change p.id to p.paper_id for arxiv implementation-->
+        {{=p.avg_quality}} / 10
+        out of {{=p.num_reviews}} ratings</p>
+        <hr>
     </div>
 {{pass}}
 </body>
 
-<hr>
+
 
 </html>
 
-<hr>
+
 <h4>Number of Papers per Average Score Range</h4>
 <div id="wrapper">
 
