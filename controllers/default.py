@@ -146,8 +146,47 @@ def paper_list():
         session.flash = T("No such board")
         redirect(URL('default', 'index'))
     list = db().select(db.tr_paper.ALL, orderby=~db.tr_paper.submission_time)
+    #query_json()
+    ##########
+    import urllib
+    url = 'http://export.arxiv.org/api/query?search_query=cat:' + request.args(0)
+    data = urllib.urlopen(url).read()
+    xmldoc = minidom.parseString(data)
 
-    return dict(paper_list = list)
+    authlist = []
+    ids = []
+    titles = []
+    abstracts = []
+    published = []
+    updated = []
+    entries = []
+
+
+    entrylist = xmldoc.getElementsByTagName('entry')
+    for item, entry in enumerate(entrylist):
+        title = entry.getElementsByTagName("title")
+        #print title[0].childNodes[0].nodeValue
+        titles.append(title[0].childNodes[0].nodeValue)
+        #print entry.getElementsByTagName("id")[0].childNodes[0].nodeValue
+        ids.append(entry.getElementsByTagName("id")[0].childNodes[0].nodeValue)
+        authors = entry.getElementsByTagName("name")
+        auth_string = ""
+        for index, el in enumerate(authors):
+            auth_string += authors[index].childNodes[0].nodeValue + '/n'
+        authlist.append(auth_string)
+
+        #print type(entry)
+        #print title
+        #authlist.append(entry.attributes['name'].value)
+        #titles.append(entry.attributes['title'].value)
+        #abstracts.append(entry.attributes['abstracts'].value)
+        #published.append(entry.attributes['published'].value)
+        #updated.append(entry.attributes['updated'].value)
+    print authlist
+    print ids
+    print titles
+
+    return dict(paper_list = list, authlist=authlist, ids=ids, titles=titles, elements=entrylist)
 
 def view_paper():
     my_paper = db.tr_paper(request.args(1))
@@ -156,6 +195,33 @@ def view_paper():
         redirect(URL('default', 'index'))
     review_list = db(db.tr_review.paper == request.args(1)).select()
     return dict(my_paper=my_paper, reviews=review_list)
+
+def query_json():
+    import urllib
+    url = 'http://export.arxiv.org/api/query?search_query=cat:' + request.args(0)
+    data = urllib.urlopen(url).read()
+    #print data
+
+    #here we use minidom from xml.dom to parse the data from the acquired xml
+    xmldoc = minidom.parseString(data)
+
+    authlist = []
+    titles = []
+    abstracts = []
+    published = []
+    updated = []
+    entrylist = xmldoc.getElementsByTagName('entry')
+    for node in xmldoc.getElementsByTagName('entry'):  # visit every node <bar />
+        #print node.toxml()
+        print node.childNodes[0]
+    #print entrylist[0].nodeValue
+    print(len(entrylist))
+    #d = {index: {'published': e[index].attributes['published'].value}
+    #     for index,e in enumerate(entrylist)}
+    #for s in entrylist:
+        #print(s)
+    #print d
+
 
 def view_paper_arxiv():
     import urllib
@@ -180,7 +246,7 @@ def view_paper_arxiv():
     has_reviewed = False
     for r in review_list:
         if r.auth_reviewer == auth.user_id:
-            has_reviewed=True
+            has_reviewed = True
 
     return dict(paper_data=data, authors=authlist, titles=titles, abstract=abstract, published=published,
                 reviews=review_list, has_reviewed=has_reviewed )

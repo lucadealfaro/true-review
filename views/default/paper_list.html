@@ -21,9 +21,73 @@
                                                                 <!-- change p.id to p.paper_id for arxiv implementation-->
     </div>
 {{pass}}
-
-
-
-
 </body>
+
+<hr>
+
+<div id="target"></div>
+
+{{for index, e in enumerate(elements):}}
+    {{id = ids[index].split('/')}}
+    {{=id[5]}}
+    {{edited_topic = request.args(0)}}
+    {{ed=edited_topic.split('.')}}
+    {{=ed[0]}}
+    <div class="entry">
+        <p class="title">{{=A(titles[index], _href=URL('default', 'view_paper_arxiv', args=[request.args(0), id[5]]))}}</p>
+                                                                <!-- change p.id to p.paper_id for arxiv implementation-->
+    </div>
+{{pass}}
+<!--
+<script id="template" type="text/ractive">
+
+hello
+<div>
+<div>
+<div>
+<div>
+    <form>
+        <input value="{% active_draft %}"></input>
+    </form>
+    <form>
+        <input value="{% active_draft %}"></input>
+    </form>
+    <form>
+        <input value="{% active_draft %}"></input>
+    </form>
+</div>
+
+
+hi
+</script>
+-->
+
+<script>
+$(function() {
+  // Ractive object
+  var MAIN = new Ractive({
+    el: '#target',
+    template: '#template',
+    delimiters: ['{%', '%}'],
+    tripleDelimiters: ['{%%', '%%}'],
+    data: {
+      url: ""  ,
+      msg_dict: {},
+      //draft_id: "{{'''=draft_id'''}}",
+      active_draft: "",
+      loading: true
+    },
+  });
+
+});
+</script>
+
+
+
+
 </html>
+
+
+
+
+
