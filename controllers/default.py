@@ -72,6 +72,7 @@ def user():
                                         )
     return dict(form=auth())
 
+#page for paper reviews
 @auth.requires_login()
 def review_paper():
     form = SQLFORM(db.tr_review)
@@ -81,14 +82,11 @@ def review_paper():
     form.vars.paper = paper.id
     curr_tr_user = db.tr_user(author=auth.user_id)
     if form.process(onvalidation=assign).accepted:
-
-        #this_reviewer = db.tr_reviewer(topic=topic.id, tr_user=curr_tr_user.id)
-        #form.vars.reviewer = this_reviewer.id
-        #db.user_reviewer_affiliation.update_or_insert()
         session.flash = T("Added review")
         redirect(URL('default', 'index'))
     return dict(form=form)
 
+#assigns the reviewer to the review if the form is accepted
 def assign(form):
     paper = db(db.tr_paper.paper_id == request.args(1)).select().first()
     curr_tr_user = db.tr_user(author=auth.user_id)
@@ -100,6 +98,7 @@ def assign(form):
     if db.tr_reviewer(topic=topic.id, tr_user=curr_tr_user.id) is None:
         db.tr_reviewer.insert(reputation=0, num_reviewed=1, topic=topic.id, tr_user=curr_tr_user.id)
     this_reviewer = db.tr_reviewer(topic=topic.id, tr_user=curr_tr_user.id)
+    #finally add the current reviewer id to the paper
     form.vars.reviewer = this_reviewer
 
 
@@ -163,7 +162,6 @@ def view_paper_arxiv():
     url = 'http://export.arxiv.org/api/query?id_list=1512.02162'
     url = 'http://export.arxiv.org/api/query?id_list=' + request.args(1)
     data = urllib.urlopen(url).read()
-    #print data
 
     #here we use minidom from xml.dom to parse the data from the acquired xml
     xmldoc = minidom.parseString(data)
@@ -179,21 +177,21 @@ def view_paper_arxiv():
 
     paper = db(db.tr_paper.paper_id == request.args(1)).select().first()
     review_list = db(db.tr_review.paper == paper.id).select()
-
-    #r = review_list.first()
-    #reviewer_id = r.id
-    #tr_user_id = db(db.tr_reviewer.id == r.id).select().first().id
-    #auth_userid = db(db.tr_user.id == tr_user_id).select().first().author
-    #print type( auth_userid)
-    #print auth_userid
-    #print db(db.auth_user(auth_userid))
-    #print db(db.tr_reviewer.id == r.id)
-    #print db(db.auth_user(auth_userid)).select()
-    #print db.auth_user(auth_userid).first_name
-    #print db(db.auth_user(1))
+    has_reviewed = False
+    for r in review_list:
+        if r.auth_reviewer == auth.user_id:
+            has_reviewed=True
 
     return dict(paper_data=data, authors=authlist, titles=titles, abstract=abstract, published=published,
-                reviews=review_list )
+                reviews=review_list, has_reviewed=has_reviewed )
+
+def user_in_reviews():
+    reviewer_id = r.reviewer
+    #print reviewer_id
+    tr_user_id = db(db.tr_reviewer.id == reviewer_id).select().first().id
+    #print tr_user_id
+    auth_userid = db(db.tr_user.id == tr_user_id).select().first().author
+    response.write(db.auth_user(auth_userid).first_name)
 
 def new_paper():
     form = SQLFORM(db.tr_paper)
@@ -285,3 +283,4 @@ def recent_posts(bid):
         if p.board == bid:
             post_list.append(p)
     return len(post_list)
+
