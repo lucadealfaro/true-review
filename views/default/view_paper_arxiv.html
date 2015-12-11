@@ -45,8 +45,6 @@
 
 <div><strong>Average Quality:</strong> {{=my_paper.avg_quality}}</div>
 
-<div id="target"></div>
-<script id="template" type="text/ractive">
 <div class="reviews">
     {{for index,r in enumerate (reversed(reviews)):}}
     <div class="review-entry">
@@ -55,13 +53,7 @@
         <span><strong> {{
             #Long chain of commands to get user who wrote review
             reviewer_id = r.reviewer
-            #response.write(reviewer_id)
-            #print reviewer_id
             tr_user_id = db(db.tr_reviewer.id == reviewer_id).select().first().id
-            #response.write(tr_user_id)
-            #print tr_user_id
-            #auth_userid = db(db.tr_user.id == tr_user_id).select().first().author
-            #response.write(db.auth_user(auth_userid).first_name)
             response.write(db.auth_user(r.auth_reviewer).first_name)
         }}</strong></span><br>
         <span><strong>Review Content: </strong><br>{{=r.review_content}}</span><br>
@@ -69,33 +61,9 @@
     </div>
 {{pass}}
 </div>
-</script>
+
 
 <br><br><br><br><br>
 
 </body>
 </html>
-
-
-<script>
-$(function() {
-    // Ractive object
-    var ractive = new Ractive({
-        el: '#target',
-        template: '#template',
-        delimiters: ['{%', '%}'],
-        tripleDelimiters: ['{%%', '%%}'],
-        data: {
-            greeting: 'Hello',
-  	        name: 'world',
-            color: 'purple',
-        	size: 4,
-        	font: 'Georgia',
-        	counter: 0
-        }
-    });
-    document.getElementById( 'count' ).addEventListener( 'click', function () {
-        ractive.set('counter', ractive.get('counter') + 1);
-    });
-});
-</script>

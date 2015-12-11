@@ -45,16 +45,7 @@ db.define_table('tr_reviewer',
                 Field('num_reviewed', 'integer'),
                 Field('topic', 'reference topics'),
                 Field('tr_user', 'reference tr_user')
-)
-
-#many to many relationship between users and reviewers
-#### NOT USED ANYMORE SINCE THE RELATION IS ONE TO MANY
-db.define_table('user_reviewer_affiliation',
-                Field('review_user', 'reference tr_user'),
-                Field('reviewer', 'reference tr_reviewer'),
-)
-
-#data needed for a paper
+)#data needed for a paper
 db.define_table('tr_paper',
                 Field('title'),
                 Field('author'), # Ok. Later perhaps we can link papers to authors who are also reviewers.
@@ -104,18 +95,6 @@ db.tr_review.paper.default = request.args(1)
 db.tr_review.auth_reviewer.readable = db.tr_review.auth_reviewer.writable = False
 db.tr_review.reviewer.writable = False
 db.tr_review.score.requires = IS_INT_IN_RANGE(1, 11)
-
-#db.tr_review.paper_content.writable = False
-#db.tr_review.paper_content.default = request.args(1)
-
-
-
-#many to many between reviewer(s) and reviews
-### NOT USED SINCE RELATION IS ONE TO MANY
-db.define_table('reviewer_review_affiliation',
-                Field('reviewer', 'reference tr_reviewer'),
-                Field('review', 'reference tr_review'),
-                )
 
 
 #many to many relationship between topics and papers

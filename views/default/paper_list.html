@@ -8,10 +8,6 @@
 <body>
 
 
-<script id="template" type="text/ractive">
-    <button id='count'>Times this button has been clicked: {% counter %}</button>
-</script>
-
 <div>{{=A(icon_home + 'Home Page', _href=URL('default', 'index'))}}</div>
 
 <hr>
@@ -188,38 +184,4 @@
         hidden = !hidden
     });
 
-</script>
-
-<script>
-    //ractive
-    var ractive = new Ractive({
-        el: '#target',
-        template: '#template',
-        delimiters: ['{%', '%}'],
-        tripleDelimiters: ['{%%', '%%}'],
-        data: {
-            greeting: 'Hello',
-  	        name: 'world',
-            color: 'purple',
-        	size: 4,
-        	font: 'Georgia',
-        	counter: 0,
-            papers: {}
-        }
-    });
-
-    // Loads the initial list of messages.
-    $.ajax("{{=URL('default', 'load_papers')}}",
-          {
-            method: 'POST',
-            success: function (data) {
-              MAIN.set('papers', data['paper_dict']);
-            }
-          },
-          alert(MAIN.get("papers"))
-    );
-
-    document.getElementById( 'count' ).addEventListener( 'click', function () {
-        ractive.set('counter', ractive.get('counter') + 1);
-    });
 </script>
