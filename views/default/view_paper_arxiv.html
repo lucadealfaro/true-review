@@ -33,6 +33,9 @@
     <br><p>{{=published[0].childNodes[0].nodeValue}}</p>
 </div>
 
+<div>{{=A("Link to Paper", _href='http://arxiv.org/abs/' + request.args(1), _target='_blank')}}</div>
+{{'http://arxiv.org/abs/' + request.args(1)}}
+
 {{if has_reviewed:}}
 <h2> You have already reviewed this paper.</h2>
 {{else:}}
@@ -42,6 +45,8 @@
 
 <div>Average Quality: {{=my_paper.avg_quality}}</div>
 
+<div id="target"></div>
+<script id="template" type="text/ractive">
 <div class="reviews">
     {{for index,r in enumerate (reversed(reviews)):}}
     <div class="entry">
@@ -61,11 +66,38 @@
         }}</strong></span><br>
         <span><strong>Review Content: </strong><br>{{=r.review_content}}</span><br>
         <span><strong>Score: </strong>{{=r.score}}</span><br>
+        <div id='count'> {{=icon_del}} </div>
+    <button id='count'>Times this button has been clicked: {% counter %}</button>
     </div>
 {{pass}}
 </div>
+</script>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 </body>
 </html>
+
+
+<script>
+$(function() {
+    // Ractive object
+    var ractive = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        tripleDelimiters: ['{%%', '%%}'],
+        data: {
+            greeting: 'Hello',
+  	        name: 'world',
+            color: 'purple',
+        	size: 4,
+        	font: 'Georgia',
+        	counter: 0
+        }
+    });
+    document.getElementById( 'count' ).addEventListener( 'click', function () {
+        ractive.set('counter', ractive.get('counter') + 1);
+    });
+});
+</script>
