@@ -1,0 +1,220 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
+{{extend 'layout.html'}}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body class="body_class">
+    <h1>Discussions</h1>
+    <h4>Discuss topics with other reviewers and arxiv users</h4>
+</body>
+
+<div id="target"></div>
+<script id="template" type="text/ractive">
+
+{{if auth.user_id is None:}}
+    <div class="not_signed_in">
+        {{=A('Sign Up', _class='btn btn-primary', _href=URL('default', 'user', args=['register']))}}
+        {{=A('Sign In', _class='btn btn-info', _href=URL('default', 'user', args=['login']))}}
+    </div>
+{{else:}}
+        <button class="btn btn-success" on-click="new-draft"><i class="fa fa-plus"></i> New Discussion</button>
+{{pass}}
+
+<hr>
+<!--
+    <button class="btn btn-warning" on-click="stats"><i class="fa fa-plus"></i> Stats</button>
+-->
+
+<h2>Topics:</h2>
+{% #msg_dict:msg_id %}
+    {% #if editable === true %}
+      <div class="entry">
+           <form action="#" class="form-horizontal" enctype="multipart/form-data" method="post">
+            Board name:<br>
+            <input type="text" name="firstname" value={% active_name %}>
+            <hr>
+            Description:<br>
+            <input type="text" name="lastname" value={% active_desc %}>
+            <br><br>
+            <input type="submit" value="Submit" on-click="addmsg"/>
+         </form>
+
+      </div>
+    {% /if %}
+    {% #if editable === false %}
+        <div class="entry">
+          <div class="title">
+            <a href="{% board_url + "/" + board_id %}">{% name %}</a>
+          </div>
+          <hr>
+          <div class="message">
+            {% description %}
+          </div>
+
+        </div>
+    {% /if %}
+{% /msg_dict %}
+
+
+
+</script>
+
+
+<script>
+$(function() {
+
+    // Ractive object
+    var MAIN = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        tripleDelimiters: ['{%%', '%%}'],
+        data: {
+            msg_dict: [], //change to []?
+            active_draft: "",
+            active_name: "",
+            active_desc: "",
+            board_url: "{{=URL('default','posts')}}",
+            draft_id: "",
+            board_name:"",
+            board_desc:"",
+            loading: true
+        },
+    });
+
+  // Loads the initial list of messages.
+  $.ajax("{{=URL('default', 'get_boards', user_signature=True)}}",
+          {
+            method: 'POST',
+            success: function (data) {
+              MAIN.set('msg_dict', data['msg_dict']);
+              MAIN.set('loading', false);
+            }
+          }
+  );
+
+  // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+  function generateUUID(){
+    var d = new Date().getTime();
+    if(window.performance && typeof window.performance.now === "function"){
+        d += performance.now();; //use high-precision timer if available
+    }
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uuid;
+  }
+
+  // This code is called when the submit button is pressed.
+  MAIN.on("addmsg", function(e) {
+    //var msg_content = MAIN.get('active_draft');
+    var board_title = MAIN.get('active_name');
+    var board_msg = MAIN.get('active_desc');
+    if ($.trim(board_title).length > 0) {
+      // Send content back to server.  false = message is not a draft.
+      send_board(board_title, board_msg, false);
+      MAIN.set('active_name', '');
+      MAIN.set('active_desc', '');
+      // Invent new random draft_id.
+      MAIN.set('draft_id', generateUUID());
+    }
+    return false;
+  });
+
+  function send_board(board_title, board_msg, editable) {
+      var call_draft_id = MAIN.get('draft_id');
+      //alert(MAIN.get('draft_id'));
+      $.ajax("{{=URL('default', 'add_board', user_signature=True)}}",
+                {
+                    data: {
+                        msg: board_msg, // request.vars.msg
+                        title: board_title, //request.vars.title
+                        is_draft: editable, // request.vars.is_draft
+                        msg_id: call_draft_id // request.vars.msg_id
+
+                    },
+
+                    method: 'POST',
+                    success: function () {
+                        var msg_dict = MAIN.get('msg_dict');
+                        /*
+                        msg_dict[call_draft_id]['name'] = board_title;
+                        msg_dict[call_draft_id]['description'] = board_msg;
+                        msg_dict[call_draft_id]['editable'] = true;
+                        */
+                        var filled_board = {editable: editable, name:board_title,
+                            description:board_msg, board_id:MAIN.get('draft_id')};
+                        msg_dict.splice(0, 1, filled_board);
+                        MAIN.set('msg_dict', msg_dict);
+                    },
+                    error: function () {}
+                }
+
+
+        );
+    }
+
+  function send_message(msg_content, is_draft) {
+    var call_draft_id = MAIN.get('draft_id');
+    $.ajax("{{=URL('default', 'add_msg', user_signature=True)}}",
+            {
+              data: {
+                msg: msg_content, // request.vars.msg
+                is_draft: is_draft, // request.vars.is_draft
+                msg_id: call_draft_id // request.vars.msg_id
+              },
+              method: 'POST',
+              success: function() {
+                // Reflect in the list of drafts or messages the update sent to the server.
+                var msg_dict = MAIN.get('msg_dict');
+                if (call_draft_id in msg_dict) {
+                  // We have sent to the server a message/draft we have already in the dict.
+                  msg_dict[call_draft_id]['message_content'] = msg_content;
+                  msg_dict[call_draft_id]['is_draft'] = is_draft;
+                } else {
+                  // This is a new message or draft.  We have to create a new entry in the dict.
+                  msg_dict[call_draft_id] = {
+                    message_content: msg_content,
+                    is_draft: is_draft
+                  }
+                }
+                MAIN.set('msg_dict', msg_dict);
+              },
+              error: function() {}
+            }
+    );
+  }
+
+  //Statistics for debug
+  MAIN.on("stats", function() {
+    alert("msg_dict content:\n " + JSON.stringify(MAIN.get('msg_dict')));
+    alert("msg_dict length:\n " + Object.keys(MAIN.get('msg_dict')).length);
+  });
+
+  // We want to create a new draft.
+  MAIN.on("new-draft", function() {
+    // First, we send to the server the current draft, to avoid losing it.
+    //periodic_send();
+    MAIN.set('active_name', '');
+    MAIN.set('active_desc', '');
+    // Invent new random draft_id.
+    MAIN.set('draft_id', generateUUID());
+
+    var board_list = MAIN.get('msg_dict');
+
+    //alert(MAIN.get('board_list'));
+    var empty_board = {editable: true, name:'', description:'', message_id:MAIN.get('draft_id')};
+    board_list.splice(0, 0, empty_board);
+    MAIN.set('msg_dict', board_list);
+
+  });
+
+});
+
+
+</script>

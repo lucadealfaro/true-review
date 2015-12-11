@@ -15,25 +15,25 @@
 </div>
 
 <div><strong>Title:</strong>
-    <br><p>{{=titles[1].childNodes[0].nodeValue}}</p></div>
+    <br><div>{{=titles[1].childNodes[0].nodeValue}}</div></div><br>
 
 <div><strong>Author(s):</strong>
-    <p>
+    <div>
     {{for s in authors:}}
         <div>{{=s.childNodes[0].nodeValue}}</div>
     {{pass}}
-    </p>
-</div>
+    </div>
+</div><br>
 
 <div><strong>Abstract: </strong>
-    <br><p>{{=abstract[0].childNodes[0].nodeValue}}</p>
+    <br><div>{{=abstract[0].childNodes[0].nodeValue}}</div><br>
 </div>
 
 <div><strong>Published: </strong>
-    <br><p>{{=published[0].childNodes[0].nodeValue}}</p>
+    <br><div>{{=published[0].childNodes[0].nodeValue}}</div><br>
 </div>
 
-<div>{{=A("Link to Paper", _href='http://arxiv.org/abs/' + request.args(1), _target='_blank')}}</div>
+<div>{{=A("Arxiv Link", _href='http://arxiv.org/abs/' + request.args(1), _target='_blank')}}</div>
 {{'http://arxiv.org/abs/' + request.args(1)}}
 
 {{if has_reviewed:}}
@@ -43,61 +43,27 @@
     args=[request.args(0), request.args(1)]), _target='new')}}</h2>
 {{pass}}
 
-<div>Average Quality: {{=my_paper.avg_quality}}</div>
+<div><strong>Average Quality:</strong> {{=my_paper.avg_quality}}</div>
 
-<div id="target"></div>
-<script id="template" type="text/ractive">
 <div class="reviews">
     {{for index,r in enumerate (reversed(reviews)):}}
-    <div class="entry">
+    <div class="review-entry">
         <hr>
         <span><strong>#{{=index+1}} :</strong></span>
         <span><strong> {{
             #Long chain of commands to get user who wrote review
             reviewer_id = r.reviewer
-            #response.write(reviewer_id)
-            #print reviewer_id
             tr_user_id = db(db.tr_reviewer.id == reviewer_id).select().first().id
-            #response.write(tr_user_id)
-            #print tr_user_id
-            #auth_userid = db(db.tr_user.id == tr_user_id).select().first().author
-            #response.write(db.auth_user(auth_userid).first_name)
             response.write(db.auth_user(r.auth_reviewer).first_name)
         }}</strong></span><br>
         <span><strong>Review Content: </strong><br>{{=r.review_content}}</span><br>
         <span><strong>Score: </strong>{{=r.score}}</span><br>
-        <div id='count'> {{=icon_del}} </div>
-    <button id='count'>Times this button has been clicked: {% counter %}</button>
     </div>
 {{pass}}
 </div>
-</script>
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+<br><br><br><br><br>
 
 </body>
 </html>
-
-
-<script>
-$(function() {
-    // Ractive object
-    var ractive = new Ractive({
-        el: '#target',
-        template: '#template',
-        delimiters: ['{%', '%}'],
-        tripleDelimiters: ['{%%', '%%}'],
-        data: {
-            greeting: 'Hello',
-  	        name: 'world',
-            color: 'purple',
-        	size: 4,
-        	font: 'Georgia',
-        	counter: 0
-        }
-    });
-    document.getElementById( 'count' ).addEventListener( 'click', function () {
-        ractive.set('counter', ractive.get('counter') + 1);
-    });
-});
-</script>

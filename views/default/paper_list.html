@@ -7,26 +7,28 @@
 </head>
 <body>
 
+
 <div>{{=A(icon_home + 'Home Page', _href=URL('default', 'index'))}}</div>
 
 <hr>
 
 <div>{{=A('+ Create New Paper', _class='btn btn-success', _href=URL('default', 'new_paper', args=[request.args(0)]))}}</div>
-<br>
-<br>
+
 
 <div class="class-header">
     <h1>Paper List</h1>
 </div>
 
+<hr>
+
 
 {{for p in paper_list:}}
-    <div class="entry">
-        <p><strong>
+    <div class="paper">
+        <div><strong>
          {{=A(p.title, _href=URL('default', 'view_paper_arxiv', args=[request.args(0), p.paper_id]))}}</strong><br>
                                                                 <!-- change p.id to p.paper_id for arxiv implementation-->
         {{=p.avg_quality}} / 10
-        out of {{=p.num_reviews}} ratings</p>
+        out of {{=p.num_reviews}} ratings</div>
         <hr>
     </div>
 {{pass}}
@@ -35,8 +37,6 @@
 </html>
 
 <div id="clickme">{{=A('Show topic statistics', _class='btn btn-default')}}</div>
-
-
 <div id="wrapper">
 
     <ul class="graph">
@@ -163,21 +163,22 @@
             <span class="percentage" style="width: {{=paper_num1}}%"></span>
 
         </li>
-
+    </div>
     </ul>
 
 </div>
 
 <script>
-    $( "#wrapper" ).hide( "slow", function() {
+    //jQuery stuff
+    $( "#wrapper" ).hide( "fast", function() {
         });
     var hidden = true;
     $( "#clickme" ).click(function() {
         if (hidden) {
-            $("#wrapper").hide("slow", function () {
+            $("#wrapper").show("slow", function () {
             });
         } else{
-            $("#wrapper").show("slow", function () {
+            $("#wrapper").hide("slow", function () {
             });
         }
         hidden = !hidden

@@ -10,32 +10,15 @@
 
 from xml.dom import minidom
 from datetime import datetime
+import json
+import urllib
 
 #@auth.requires_login()
 def index():
-    """
-    example action using the internationalization operator T and flash
-    rendered by views/default/index.html or views/generic.html
-
-    if you need a simple wiki simply replace the two lines below with:
-    return auth.wiki()
-
-
-
-    logger.info("Here we are, in the controller.")
-    response.flash = T("Hello World")
-    return dict(message=T('Welcome to web2py!'))
-    """
-
-
-    #board_list = db().select(db.boards.ALL)
-
-    #board_list = db().select(db.boards.ALL, orderby=~db.boards.last_updated)
-    #return dict(board_list=board_list, recent_posts=recent_posts)
-
     tr_users = db().select(db.tr_user.ALL)
     topic_list = db().select(db.topics.ALL)
 
+    #Create an sqlform grid
     links = [dict(header='View Paper',
                  body = lambda r: A(icon_paper, '    Papers', _class='btn btn-primary',
                                     _href=URL('default', 'paper_list', args=[r.arxiv_category])))]
@@ -51,22 +34,13 @@ def index():
 def profile():
     return dict()
 
+@auth.requires_login()
+def discussions():
+    return dict()
+
 def user():
-    """
-    exposes:
-    http://..../[app]/default/user, _class='boardtitle'/login
-    http://..../[app]/default/user/logout
-    http://..../[app]/default/user/register
-    http://..../[app]/default/user/profile
-    http://..../[app]/default/user/retrieve_password
-    http://..../[app]/default/user/change_password
-    http://..../[app]/default/user/manage_users (requires membership in
-    http://..../[app]/default/user/bulk_register
-    use @auth.requires_login()
-        @auth.requires_membership('group name')
-        @auth.requires_permission('read','table name',record_id)
-    to decorate functions that need access control
-    """
+
+    #if the user is new they must be put into the tr_user table
     auth.settings.register_onaccept.append(lambda form: (db.tr_user.insert(author = auth.user_id, joined=datetime.utcnow(), anon=False)) if
                                                              db(db.tr_user.author == auth.user_id).select().first() is None else None
                                         )
@@ -100,12 +74,10 @@ def avg_score():
 
     if paper.num_reviews == 0:
         avg_score = 0
-        #db(db.tr_paper.paper_id == request.args(1)).select().first().avg_quality = avg_score
         db(db.tr_paper.paper_id == request.args(1)).update(avg_quality=avg_score)
     else:
         avg_score = (sum/paper.num_reviews)
         print paper.num_reviews
-        #db(db.tr_paper.paper_id == request.args(1)).select().first().avg_quality = avg_score
         db(db.tr_paper.paper_id == request.args(1)).update(avg_quality=avg_score)
 
     print avg_score
@@ -149,61 +121,27 @@ def reset():
   db(db.posts.id > 0).delete()
   db(db.boards.id > 0).delete()
 
-def paper_list_old():
-    my_topic = db.topics(request.args(0))
-    if my_topic is None:
-        session.flash = T("No such board")
-        redirect(URL('default', 'index'))
-    list = db().select(db.tr_paper.ALL, orderby=~db.tr_paper.submission_time)
-    post_list = []
-    '''
-    for p in list:
-        #if p.board == my_board[0].id:
-        if p.topic == my_topic.id:
-            post_list.append(p)
-    '''
-    return dict(paper_list=list)
-
 #paper_list with arxiv implementation
 def paper_list():
     my_topic = db.topics(arxiv_category=request.args(0))
     if my_topic is None:
         session.flash = T("No such board")
         redirect(URL('default', 'index'))
-    list1 = db().select(db.tr_paper.ALL, orderby=~db.tr_paper.submission_time)
-    #query_json()
     ##########
     my_id = my_topic.id
     print my_id
+    #check if there are no papers in the paper list
     list = db(db.topic_paper_affiliation.topic == my_id).select()
-    paper = db(db.topic_paper_affiliation.paper == my_id).select().first()
-    list2 = []
     list3 = []
     print list
     if list.first() is None:
         return dict(paper_list=[])
     else:
-        #print paper_id[0].id
-        #list = db(db.tr_paper.id == paper.id).select()
-        list2 = []
-        print len(list)
-        for index, r in enumerate(list):
-            #print db(db.tr_paper.id)
-            print r.id
-            #print db.tr_paper(r.paper)
-            list2.append(db(db.tr_paper.id == r.id))
-        print list2
-        persons_and_dogs = db((db.topics.id==db.topic_paper_affiliation.topic)  & (db.tr_paper.id==db.topic_paper_affiliation.paper))
-        print persons_and_dogs
-        for row in persons_and_dogs(db.topics.id==my_topic.id).select():
-            print row.tr_paper.title
+        topic_and_paper = db((db.topics.id==db.topic_paper_affiliation.topic)  & (db.tr_paper.id==db.topic_paper_affiliation.paper))
+        for row in topic_and_paper(db.topics.id==my_topic.id).select():
+            #print row.tr_paper.title
             list3.append(row.tr_paper)
-        print list3
-        print list1
-
-    #print list
     return dict(paper_list=list3)
-
 
 def view_paper():
     my_paper = db.tr_paper(request.args(1))
@@ -213,35 +151,8 @@ def view_paper():
     review_list = db(db.tr_review.paper == request.args(1)).select()
     return dict(my_paper=my_paper, reviews=review_list)
 
-def query_json():
-    import urllib
-    url = 'http://export.arxiv.org/api/query?search_query=cat:' + request.args(0)
-    data = urllib.urlopen(url).read()
-    #print data
-
-    #here we use minidom from xml.dom to parse the data from the acquired xml
-    xmldoc = minidom.parseString(data)
-
-    authlist = []
-    titles = []
-    abstracts = []
-    published = []
-    updated = []
-    entrylist = xmldoc.getElementsByTagName('entry')
-    for node in xmldoc.getElementsByTagName('entry'):  # visit every node <bar />
-        #print node.toxml()
-        print node.childNodes[0]
-    #print entrylist[0].nodeValue
-    print(len(entrylist))
-    #d = {index: {'published': e[index].attributes['published'].value}
-    #     for index,e in enumerate(entrylist)}
-    #for s in entrylist:
-        #print(s)
-    #print d
-
 
 def view_paper_arxiv():
-    import urllib
     my_paper = db.tr_paper(paper_id = request.args(1))
     url = 'http://export.arxiv.org/api/query?id_list=1512.02162'
     url = 'http://export.arxiv.org/api/query?id_list=' + request.args(1)
@@ -274,14 +185,6 @@ def view_paper_arxiv():
     return dict(paper_data=data, authors=authlist, titles=titles, abstract=abstract, published=published,
                 reviews=review_list, has_reviewed=has_reviewed, my_paper=my_paper )
 
-def user_in_reviews():
-    reviewer_id = r.reviewer
-    #print reviewer_id
-    tr_user_id = db(db.tr_reviewer.id == reviewer_id).select().first().id
-    #print tr_user_id
-    auth_userid = db(db.tr_user.id == tr_user_id).select().first().author
-    response.write(db.auth_user(auth_userid).first_name)
-
 def new_paper():
     form = SQLFORM(db.tr_paper)
     topic = db(db.topics.arxiv_category == request.args(0)).select().first()
@@ -306,73 +209,27 @@ def new_topics():
         redirect(URL('default', 'index'))
     return dict(form=form)
 
-@auth.requires_login()
 @auth.requires_signature()
-def new_post():
-    # Not necessary but a good idea.
-    board = db.boards(request.args(0))
-    if board is None:
-        session.flash = T("No such board")
-        redirect(URL('default', 'index'))
-    form = SQLFORM(db.posts)
-    now = datetime.utcnow()
-    if form.process().accepted:
-        form.vars.post_created_on = now
-        board.last_updated = now
-        board.update_record()
-        try:
-            db.commit()
-        except Exception, e:
-            logger.warning("Transaction commit failed while updating board time")
-        else:
-            session.flash = T("Added post")
-            redirect(URL('default', 'posts', args=[request.args(0)]))
+def add_msg():
+    db.post.update_or_insert((db.post.message_id == request.vars.msg_id),
+            message_id=request.vars.msg_id,
+            message_content=request.vars.msg,
+            is_draft=json.loads(request.vars.is_draft))
+    return "ok"
 
-    return dict(form=form)
-
-def posts():
-    my_board = db.boards(request.args(0))
-    if my_board is None:
-        session.flash = T("No such board")
-        redirect(URL('default', 'index'))
-    #my_board = db(db.boards.id == request.args(0)).select()
-    pre_post_list = db().select(db.posts.ALL, orderby=~db.posts.post_created_on)
-    post_list = []
-    for p in pre_post_list:
-        #if p.board == my_board[0].id:
-        if p.board == my_board.id:
-            post_list.append(p)
-    edit_button = A('Edit', icon_edit, _href=URL('default', 'edit_post', args=[db.posts.id]))
-    return dict(post_list=post_list, my_board=my_board)
-
-@auth.requires_login()
 @auth.requires_signature()
-def edit_post():
-    my_post = db.posts(request.args(0))
-    if my_post is None:
-        session.flash = T("No such post")
-        redirect(URL('default', 'index'))
-    form = SQLFORM(db.posts, record=my_post)
-    if form.process(). accepted:
-        session.flash = T("Post edited")
-        redirect(URL('default', 'index'))
-    return dict(form=form)
+def add_board():
+    db.boards.update_or_insert((db.boards.board_id == request.vars.msg_id),
+            board_id=request.vars.msg_id,
+            name=request.vars.title,
+            description=request.vars.msg,
+            editable=json.loads(request.vars.is_draft),
+            board_topic=request.args(0)
+    )
+    return "ok"
 
-@auth.requires_login()
-@auth.requires_signature()
-def delete_post():
-    db(db.posts.id == request.args(0)).delete()
-    session.flash = T("Post deleted")
-    redirect(URL('default', 'index'))
-
-def recent_posts(bid):
-    from datetime import datetime, timedelta
-    now = datetime.utcnow()
-    yesterday = now - timedelta(days=1)
-    pre_post_list = db(db.posts.post_created_on > yesterday).select()
-    post_list = []
-    for p in pre_post_list:
-        if p.board == bid:
-            post_list.append(p)
-    return len(post_list)
-
+def get_boards():
+    rows=db().select(db.boards.ALL)
+    rows=db(db.boards.board_topic == request.args(0)).select()
+    board_list = [dict(name=r.name, description=r.description, editable=r.editable, board_id=r.board_id) for r in rows]
+    return response.json(dict(msg_dict = board_list))
