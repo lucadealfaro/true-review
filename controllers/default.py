@@ -10,6 +10,8 @@
 
 from xml.dom import minidom
 from datetime import datetime
+import json
+import urllib
 
 #@auth.requires_login()
 def index():
@@ -49,6 +51,10 @@ def index():
 
 @auth.requires_login()
 def profile():
+    return dict()
+
+@auth.requires_login()
+def discussions():
     return dict()
 
 def user():
@@ -186,23 +192,34 @@ def paper_list():
         #print paper_id[0].id
         #list = db(db.tr_paper.id == paper.id).select()
         list2 = []
-        print len(list)
+        #print len(list)
         for index, r in enumerate(list):
             #print db(db.tr_paper.id)
             print r.id
             #print db.tr_paper(r.paper)
             list2.append(db(db.tr_paper.id == r.id))
-        print list2
-        persons_and_dogs = db((db.topics.id==db.topic_paper_affiliation.topic)  & (db.tr_paper.id==db.topic_paper_affiliation.paper))
-        print persons_and_dogs
-        for row in persons_and_dogs(db.topics.id==my_topic.id).select():
-            print row.tr_paper.title
+        #print list2
+        topic_and_paper = db((db.topics.id==db.topic_paper_affiliation.topic)  & (db.tr_paper.id==db.topic_paper_affiliation.paper))
+        #print topic_and_paper
+        for row in topic_and_paper(db.topics.id==my_topic.id).select():
+            #print row.tr_paper.title
             list3.append(row.tr_paper)
-        print list3
-        print list1
-
+        #print list3
+        #print list1
     #print list
     return dict(paper_list=list3)
+
+
+def load_papers():
+    my_topic = db.topics(arxiv_category=request.args(0))
+    topic_and_paper = db((db.topics.id==db.topic_paper_affiliation.topic)  & (db.tr_paper.id==db.topic_paper_affiliation.paper))
+    print topic_and_paper
+    d = {row.tr_paper.id:{'avg_quality':row.tr_paper.avg_quality,
+                          'num_reviews':row.tr_paper.num_reviews,
+                          'title':row.tr_paper.title}
+        for row in topic_and_paper(db.topics.id==my_topic.id).select()}
+    print d[0]
+    return response.json(dict(paper_dict=d))
 
 
 def view_paper():
@@ -214,7 +231,7 @@ def view_paper():
     return dict(my_paper=my_paper, reviews=review_list)
 
 def query_json():
-    import urllib
+
     url = 'http://export.arxiv.org/api/query?search_query=cat:' + request.args(0)
     data = urllib.urlopen(url).read()
     #print data
@@ -241,7 +258,6 @@ def query_json():
 
 
 def view_paper_arxiv():
-    import urllib
     my_paper = db.tr_paper(paper_id = request.args(1))
     url = 'http://export.arxiv.org/api/query?id_list=1512.02162'
     url = 'http://export.arxiv.org/api/query?id_list=' + request.args(1)
@@ -305,6 +321,31 @@ def new_topics():
         session.flash = T("Added topic")
         redirect(URL('default', 'index'))
     return dict(form=form)
+
+@auth.requires_signature()
+def add_msg():
+    db.post.update_or_insert((db.post.message_id == request.vars.msg_id),
+            message_id=request.vars.msg_id,
+            message_content=request.vars.msg,
+            is_draft=json.loads(request.vars.is_draft))
+    return "ok"
+
+@auth.requires_signature()
+def add_board():
+    db.boards.update_or_insert((db.boards.board_id == request.vars.msg_id),
+            board_id=request.vars.msg_id,
+            name=request.vars.title,
+            description=request.vars.msg,
+            editable=json.loads(request.vars.is_draft),
+            board_topic=request.args(0)
+    )
+    return "ok"
+
+def get_boards():
+    rows=db().select(db.boards.ALL)
+    rows=db(db.boards.board_topic == request.args(0)).select()
+    board_list = [dict(name=r.name, description=r.description, editable=r.editable, board_id=r.board_id) for r in rows]
+    return response.json(dict(msg_dict = board_list))
 
 @auth.requires_login()
 @auth.requires_signature()

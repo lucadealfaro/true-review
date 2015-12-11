@@ -33,7 +33,7 @@ db.define_table('tr_user',
 db.tr_user.joined.default = datetime.utcnow()
 db.tr_user.joined.readable = db.tr_user.joined.writable = False
 
-#data for a topic. User can specify a name and arxive category
+#data for a topic. User can specify a name and arxiv category
 db.define_table('topics',
                 Field('name'),
                 Field('arxiv_category')
@@ -124,7 +124,17 @@ db.define_table('topic_paper_affiliation',
                 Field('paper', 'reference tr_paper'),
                 )
 
-#db.messages.board.readable = db.messages.board.writable = False
+db.define_table('boards',
+                Field('name'),
+                Field('author', db.auth_user, default=auth.user_id),
+                Field('last_updated', 'datetime'),
+                Field('description', 'text'),
+                Field('editable', 'boolean', default=False),
+                Field('board_id'),
+                Field('board_topic', 'reference topics')
+                )
+db.boards.last_updated.default = datetime.utcnow()
+db.boards.last_updated.readable = db.boards.last_updated.writable = False
 
 
 

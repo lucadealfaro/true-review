@@ -54,11 +54,92 @@ div.icons {
 }
 */
 
+/*BOARD POSTS*/
+
+/* line 5, ../sass/_main.scss */
+p {
+  white-space: pre-line;
+}
+
+/* line 9, ../sass/_main.scss */
+.entryform {
+  position: absolute;
+  left: 100px;
+  top: 150px;
+}
+
+/* line 15, ../sass/_main.scss */
+div.entry {
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2NjY2NjYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #cccccc));
+  background-image: -moz-linear-gradient(#ffffff, #cccccc);
+  background-image: -webkit-linear-gradient(#ffffff, #cccccc);
+  background-image: linear-gradient(#ffffff, #cccccc);
+  margin: 10px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  border: 1px solid #777;
+  -moz-box-shadow: rgba(0, 0, 0, 0.7) 0 4px 10px 2px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.7) 0 4px 10px 2px;
+  box-shadow: rgba(0, 0, 0, 0.7) 0 4px 10px 2px;
+  display: inline-block;
+}
+/* line 27, ../sass/_main.scss */
+div.entry div {
+  text-align: center;
+}
+/* line 30, ../sass/_main.scss */
+div.entry .title {
+  font-size: 1.5em;
+  color: #f1g23a;
+}
+/* line 34, ../sass/_main.scss */
+div.entry .post_num {
+  font-size: 3em;
+}
+/* line 37, ../sass/_main.scss */
+div.entry p.created_on {
+  font-size: 1em;
+  color: #777675;
+}
+
+/* line 43, ../sass/_main.scss */
+div.entry-draft {
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZmN2Y1MCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #ff7f50));
+  background-image: -moz-linear-gradient(#ffffff, #ff7f50);
+  background-image: -webkit-linear-gradient(#ffffff, #ff7f50);
+  background-image: linear-gradient(#ffffff, #ff7f50);
+}
+
+/* line 47, ../sass/_main.scss */
+.back {
+  text-align: end;
+}
+
+/* line 51, ../sass/_main.scss */
+h1.create {
+  text-align: center;
+}
+
+/* line 55, ../sass/_main.scss */
+div.icons {
+  text-align: right;
+}
+
+
+/*GRAPHS*/
 body {
   margin: 0;
   background: #FFF;
   font-family: verdana, sans-serif;
-  font-size: 1em;
   background-color: rgba(196, 223, 255, 1);
 }
 

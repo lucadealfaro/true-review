@@ -7,26 +7,32 @@
 </head>
 <body>
 
+
+<script id="template" type="text/ractive">
+    <button id='count'>Times this button has been clicked: {% counter %}</button>
+</script>
+
 <div>{{=A(icon_home + 'Home Page', _href=URL('default', 'index'))}}</div>
 
 <hr>
 
 <div>{{=A('+ Create New Paper', _class='btn btn-success', _href=URL('default', 'new_paper', args=[request.args(0)]))}}</div>
-<br>
-<br>
+
 
 <div class="class-header">
     <h1>Paper List</h1>
 </div>
 
+<hr>
+
 
 {{for p in paper_list:}}
-    <div class="entry">
-        <p><strong>
+    <div class="paper">
+        <div><strong>
          {{=A(p.title, _href=URL('default', 'view_paper_arxiv', args=[request.args(0), p.paper_id]))}}</strong><br>
                                                                 <!-- change p.id to p.paper_id for arxiv implementation-->
         {{=p.avg_quality}} / 10
-        out of {{=p.num_reviews}} ratings</p>
+        out of {{=p.num_reviews}} ratings</div>
         <hr>
     </div>
 {{pass}}
@@ -35,8 +41,6 @@
 </html>
 
 <div id="clickme">{{=A('Show topic statistics', _class='btn btn-default')}}</div>
-
-
 <div id="wrapper">
 
     <ul class="graph">
@@ -163,24 +167,59 @@
             <span class="percentage" style="width: {{=paper_num1}}%"></span>
 
         </li>
-
+    </div>
     </ul>
 
 </div>
 
 <script>
-    $( "#wrapper" ).hide( "slow", function() {
+    //jQuery stuff
+    $( "#wrapper" ).hide( "fast", function() {
         });
     var hidden = true;
     $( "#clickme" ).click(function() {
         if (hidden) {
-            $("#wrapper").hide("slow", function () {
+            $("#wrapper").show("slow", function () {
             });
         } else{
-            $("#wrapper").show("slow", function () {
+            $("#wrapper").hide("slow", function () {
             });
         }
         hidden = !hidden
     });
 
+</script>
+
+<script>
+    //ractive
+    var ractive = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        tripleDelimiters: ['{%%', '%%}'],
+        data: {
+            greeting: 'Hello',
+  	        name: 'world',
+            color: 'purple',
+        	size: 4,
+        	font: 'Georgia',
+        	counter: 0,
+            papers: {}
+        }
+    });
+
+    // Loads the initial list of messages.
+    $.ajax("{{=URL('default', 'load_papers')}}",
+          {
+            method: 'POST',
+            success: function (data) {
+              MAIN.set('papers', data['paper_dict']);
+            }
+          },
+          alert(MAIN.get("papers"))
+    );
+
+    document.getElementById( 'count' ).addEventListener( 'click', function () {
+        ractive.set('counter', ractive.get('counter') + 1);
+    });
 </script>
